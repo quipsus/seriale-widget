@@ -115,6 +115,14 @@ color: var(–ink); background: var(–bg);
 .empty{ text-align:center; color: var(–ink-soft); padding: 40px 0; font-size: 0.9rem; }
 .error{ background: #FBEEE8; border: 1px solid var(–warn); color: var(–warn); padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
 
+.wiecej-btn{
+display:block; margin: 20px auto 0;
+font-family:‘Inter’,sans-serif; font-weight: 600; font-size: 0.85rem;
+border: 2px solid var(–ink); background: var(–bg); color: var(–ink);
+padding: 10px 20px; cursor: pointer; border-radius: 8px;
+}
+.wiecej-btn:hover{ background: var(–ink); color: var(–bg); }
+
 details summary{ cursor:pointer; font-size: 0.8rem; color: var(–sea); margin-top: 8px; font-weight: 600; }
 .history-block{
 font-size: 0.85rem;
@@ -138,6 +146,7 @@ line-height: 1.9;
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
   <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
+  <button class="wiecej-btn" id="wiecej" style="display:none;">Pokaż kolejne 50</button>
 </div>
 
 <script>
@@ -150,6 +159,8 @@ line-height: 1.9;
   const KOLEJNOSC_STATUSOW = ['kompletny', 'niekompletny'];
 
   let wszystkieRekordy = [];
+  const PORCJA = 50;
+  let ileWidocznych = PORCJA;
 
   function pokazBlad(tresc){
     document.getElementById('blad').innerHTML =
@@ -164,20 +175,26 @@ line-height: 1.9;
     const fraza = document.getElementById('szukaj').value.trim().toLowerCase();
     const lista = document.getElementById('lista');
     const pusto = document.getElementById('pusto');
+    const wiecejBtn = document.getElementById('wiecej');
     lista.innerHTML = '';
 
-    const przefiltrowane = wszystkieRekordy
+    const pasujace = wszystkieRekordy
       .filter(r => STATUSY_W_WIDOKU.includes(r.status))
       .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
       .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
 
-    document.getElementById('licznik').textContent = przefiltrowane.length + ' pozycji';
+    const przefiltrowane = pasujace.slice(0, ileWidocznych);
 
-    if(przefiltrowane.length === 0){
+    document.getElementById('licznik').textContent =
+      przefiltrowane.length + ' z ' + pasujace.length + ' pozycji';
+
+    if(pasujace.length === 0){
       pusto.style.display = 'block';
+      wiecejBtn.style.display = 'none';
       return;
     }
     pusto.style.display = 'none';
+    wiecejBtn.style.display = (pasujace.length > przefiltrowane.length) ? 'block' : 'none';
 
     przefiltrowane.forEach(r => {
       const karta = document.createElement('div');
@@ -264,7 +281,14 @@ line-height: 1.9;
 
   grist.ready({ requiredAccess: 'full' });
   grist.onRecords(wczytajDane);
-  document.getElementById('szukaj').addEventListener('input', renderuj);
+  document.getElementById('szukaj').addEventListener('input', () => {
+    ileWidocznych = PORCJA;
+    renderuj();
+  });
+  document.getElementById('wiecej').addEventListener('click', () => {
+    ileWidocznych += PORCJA;
+    renderuj();
+  });
 
   // Pierwsze wczytanie, gdyby onRecords nie odpalił się od razu.
   wczytajDane();
