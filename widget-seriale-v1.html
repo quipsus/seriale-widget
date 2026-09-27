@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seriale — widget</title>
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg: #F4F7F8;
+    --bg-alt: #E8EEF2;
+    --ink: #154565;
+    --ink-soft: #526A7A;
+    --sea: #4FA3DA;
+    --mint: #5EBAA3;
+    --mint-bg: #E7F3F0;
+    --mint-ink: #2E6E5D;
+    --warn: #CB704D;
+    --line: #BFCFD9;
+    --violet: #8C7CC0;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', Calibri, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  .wrap{ padding: 16px 20px 60px; max-width: 1100px; margin: 0 auto; }
+
+  .toolbar{
+    display:flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .toolbar input[type=text]{
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: 9px 12px;
+    border: none; border-bottom: 2px solid var(--ink);
+    background: transparent; width: 260px; color: var(--ink);
+  }
+  .toolbar input[type=text]:focus{ outline:none; border-bottom-color: var(--sea); }
+  .count{ font-size: 0.8rem; color: var(--ink-soft); }
+
+  .cards{ display:flex; flex-direction:column; gap: 8px; }
+
+  .card{
+    display: grid;
+    grid-template-columns: 76px 1fr 200px;
+    gap: 20px;
+    padding: 16px;
+    align-items: start;
+    position: relative;
+  }
+  .card:not(:first-child)::before{
+    content:"";
+    position: absolute;
+    top: -4px; left: 16px; right: 16px;
+    height: 1px;
+    background: var(--line);
+  }
+  .card:hover{ background: var(--bg-alt); border-radius: 10px; }
+  .card:hover::before, .card:hover + .card::before{ display:none; }
+
+  .poster{
+    width: 76px; height: 106px;
+    background: linear-gradient(150deg, var(--sea), var(--ink));
+    display:flex; align-items:center; justify-content:center;
+    color: var(--bg); font-family:'Inter',sans-serif; font-weight: 800; font-size: 1.5rem;
+    flex-shrink:0;
+  }
+
+  .card-main h3{ font-family:'Inter',sans-serif; font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; }
+  .meta{ font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 8px; }
+  .desc{ font-size: 0.87rem; color: var(--ink-soft); max-width: 58ch; margin: 0; }
+
+  .card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
+
+  .tag{
+    font-size: 0.72rem; font-weight: 600;
+    padding: 6px 9px;
+    border: 1px solid var(--ink);
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    background: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .tag.oczekiwany{ border-color: var(--violet); color: #564785; background: #EDEAF5; }
+  .tag.emitowany{ border-color: var(--mint); color: var(--mint-ink); background: var(--mint-bg); }
+  .tag.kompletny{ border-color: var(--sea); color: var(--sea); background: #E5EFF5; }
+  .tag.niekompletny{ border-color: var(--warn); color: var(--warn); background: #FBEEE8; }
+  .tag:hover{ filter: brightness(0.95); }
+  .tag-hint{ font-size: 0.62rem; color: var(--ink-soft); margin-top: -4px; }
+
+  .location-btn{
+    font-family:'Inter',sans-serif; font-weight: 600; font-size: 0.72rem;
+    border: 1px solid var(--ink); border-radius: 8px;
+    padding: 6px 9px; width: 100%; box-sizing: border-box;
+    text-align: center;
+    color: var(--ink); background: var(--bg);
+  }
+
+  .empty{ text-align:center; color: var(--ink-soft); padding: 40px 0; font-size: 0.9rem; }
+  .error{ background: #FBEEE8; border: 1px solid var(--warn); color: var(--warn); padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="toolbar">
+    <input type="text" id="szukaj" placeholder="szukaj tytułu…">
+    <div class="count" id="licznik"></div>
+  </div>
+  <div id="blad"></div>
+  <div class="cards" id="lista"></div>
+  <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
+</div>
+
+<script>
+  // ---- Konfiguracja ----
+  // Statusy pokazywane w tym widoku (widok "seriale" = w trakcie / czekające).
+  // Zmień na ['kompletny', 'niekompletny'], żeby ten sam widget użyć jako "archiwum".
+  const STATUSY_W_WIDOKU = ['oczekiwany', 'emitowany'];
+
+  // Kolejność klikania w tag statusu (cykliczne przełączanie) — ograniczona do sensownych
+  // przejść w obrębie tego widoku, żeby nie dało się przypadkiem "zgubić" serialu
+  // przenosząc go do kompletny/niekompletny stąd (to robimy w Griście świadomie).
+  const KOLEJNOSC_STATUSOW = ['oczekiwany', 'emitowany'];
+
+  let wszystkieRekordy = [];
+
+  function pokazBlad(tresc){
+    document.getElementById('blad').innerHTML =
+      `<div class="error">${tresc}</div>`;
+  }
+
+  function inicjalTytulu(tytul){
+    return (tytul || '?').trim().charAt(0).toUpperCase();
+  }
+
+  function renderuj(){
+    const fraza = document.getElementById('szukaj').value.trim().toLowerCase();
+    const lista = document.getElementById('lista');
+    const pusto = document.getElementById('pusto');
+    lista.innerHTML = '';
+
+    const przefiltrowane = wszystkieRekordy
+      .filter(r => STATUSY_W_WIDOKU.includes(r.status))
+      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
+      .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
+
+    document.getElementById('licznik').textContent = przefiltrowane.length + ' pozycji';
+
+    if(przefiltrowane.length === 0){
+      pusto.style.display = 'block';
+      return;
+    }
+    pusto.style.display = 'none';
+
+    przefiltrowane.forEach(r => {
+      const karta = document.createElement('div');
+      karta.className = 'card';
+
+      const metaCzesci = [r.rok, r.kraj].filter(Boolean);
+
+      karta.innerHTML = `
+        <div class="poster">${inicjalTytulu(r.tytul)}</div>
+        <div class="card-main">
+          <h3>${escapeHtml(r.tytul || '(bez tytułu)')}</h3>
+          <div class="meta">${escapeHtml(metaCzesci.join(' · '))}</div>
+          <p class="desc">${escapeHtml(r.opis || '')}</p>
+        </div>
+        <div class="card-side">
+          <button class="tag ${escapeHtml(r.status || '')}" data-id="${r.id}">${escapeHtml(r.status || '—')}</button>
+          <div class="tag-hint">kliknij, by zmienić</div>
+          ${r.dysk || r.rozmiar_gb ? `<div class="location-btn">${escapeHtml(r.dysk || '—')}${r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : ''}</div>` : ''}
+        </div>
+      `;
+      lista.appendChild(karta);
+    });
+
+    document.querySelectorAll('.tag[data-id]').forEach(btn => {
+      btn.addEventListener('click', onKlikStatus);
+    });
+  }
+
+  function escapeHtml(tekst){
+    const div = document.createElement('div');
+    div.textContent = tekst == null ? '' : String(tekst);
+    return div.innerHTML;
+  }
+
+  async function onKlikStatus(ev){
+    const btn = ev.currentTarget;
+    const id = Number(btn.dataset.id);
+    const rekord = wszystkieRekordy.find(r => r.id === id);
+    if(!rekord) return;
+
+    const obecnyIndeks = KOLEJNOSC_STATUSOW.indexOf(rekord.status);
+    const nowyStatus = KOLEJNOSC_STATUSOW[(obecnyIndeks + 1) % KOLEJNOSC_STATUSOW.length];
+
+    btn.disabled = true;
+    try{
+      await grist.docApi.applyUserActions([
+        ['UpdateRecord', 'Seriale', id, { status: nowyStatus }]
+      ]);
+      rekord.status = nowyStatus;
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się zapisać zmiany statusu: ' + e.message);
+      btn.disabled = false;
+    }
+  }
+
+  async function wczytajDane(){
+    try{
+      const tabela = await grist.docApi.fetchTable('Seriale');
+      const liczbaWierszy = tabela.id.length;
+      wszystkieRekordy = [];
+      for(let i = 0; i < liczbaWierszy; i++){
+        wszystkieRekordy.push({
+          id: tabela.id[i],
+          tytul: tabela.tytul ? tabela.tytul[i] : '',
+          rok: tabela.rok ? tabela.rok[i] : '',
+          kraj: tabela.kraj ? tabela.kraj[i] : '',
+          status: tabela.status ? tabela.status[i] : '',
+          dysk: tabela.dysk ? tabela.dysk[i] : '',
+          rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
+          opis: tabela.opis ? tabela.opis[i] : '',
+        });
+      }
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
+    }
+  }
+
+  grist.ready({ requiredAccess: 'full' });
+  grist.onRecords(wczytajDane);
+  document.getElementById('szukaj').addEventListener('input', renderuj);
+
+  // Pierwsze wczytanie, gdyby onRecords nie odpalił się od razu.
+  wczytajDane();
+</script>
+
+</body>
+</html>
