@@ -249,6 +249,7 @@
   let dyskiDane = [];
   let strona = 1;
   let naglowekWczytany = false;
+  let serialeMaPlakatTmdb = false;   // czy tabela Seriale ma już kolumnę plakat_tmdb
 
   function pad2(n){ return String(n).padStart(2, '0'); }
 
@@ -286,6 +287,7 @@
 
   async function wczytajSeriale(){
     const tabela = await grist.docApi.fetchTable('Seriale');
+    serialeMaPlakatTmdb = Boolean(tabela.plakat_tmdb);
     wszystkieRekordy = [];
     for(let i = 0; i < tabela.id.length; i++){
       wszystkieRekordy.push({
@@ -311,6 +313,7 @@
     const pola = { tytul: r.tytul, link_epguides: r.link_epguides || '', kraj: r.kraj || '', opis: r.opis || '' };
     if(r.rok) pola.rok = r.rok;
     if(Array.isArray(r.plakat)) pola.plakat = r.plakat;
+    if(r.plakat_tmdb && serialeMaPlakatTmdb) pola.plakat_tmdb = r.plakat_tmdb;
     return pola;
   }
 
@@ -634,6 +637,7 @@
     if(istniejacy){
       const zmiany = { status: 'kompletny' };
       if(pola.historia_sezonow) zmiany.historia_sezonow = pola.historia_sezonow;
+      if(pola.plakat_tmdb) zmiany.plakat_tmdb = pola.plakat_tmdb;
       akcje.push(['UpdateRecord', 'Seriale', istniejacy.id, zmiany]);
     } else {
       akcje.push(['AddRecord', 'Seriale', null, pola]);
@@ -665,6 +669,7 @@
           odcinki_posiadane: t.odcinki_posiadane ? t.odcinki_posiadane[i] : '',
           opis: t.opis ? t.opis[i] : '',
           plakat: t.plakat ? t.plakat[i] : null,
+          plakat_tmdb: t.plakat_tmdb ? t.plakat_tmdb[i] : '',
         });
       }
       await wczytajNaglowek();

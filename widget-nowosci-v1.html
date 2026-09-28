@@ -239,6 +239,7 @@
   let dyskiDane = [];
   let strona = 1;
   let naglowekWczytany = false;
+  let serialeMaPlakatTmdb = false;   // czy tabela Seriale ma już kolumnę plakat_tmdb
 
   function pad2(n){ return String(n).padStart(2, '0'); }
 
@@ -276,6 +277,7 @@
 
   async function wczytajSeriale(){
     const tabela = await grist.docApi.fetchTable('Seriale');
+    serialeMaPlakatTmdb = Boolean(tabela.plakat_tmdb);
     wszystkieRekordy = [];
     for(let i = 0; i < tabela.id.length; i++){
       wszystkieRekordy.push({
@@ -301,6 +303,7 @@
     const pola = { tytul: r.tytul, link_epguides: r.link_epguides || '', kraj: r.kraj || '', opis: r.opis || '' };
     if(r.rok) pola.rok = r.rok;
     if(Array.isArray(r.plakat)) pola.plakat = r.plakat;
+    if(r.plakat_tmdb && serialeMaPlakatTmdb) pola.plakat_tmdb = r.plakat_tmdb;
     return pola;
   }
 
