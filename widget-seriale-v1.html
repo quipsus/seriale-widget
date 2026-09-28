@@ -9,7 +9,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-  :root{ color-scheme: light; }
+  :root{ color-scheme: light; --linie-opisu: 3; }   /* ile linii opisu widać na karcie */
   *{ box-sizing: border-box; }
   html{ background: #F4F7F8; color-scheme: light; }
 
@@ -58,17 +58,18 @@
   }
   .disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
   .filmstrip{
-    display:flex; align-items:center; gap: 2px;
-    background: #FFFFFF; border: 1px solid #BFCFD9; padding: 4px 5px; border-radius: 4px; position: relative;
+    display:flex; align-items:stretch;
+    background: transparent; border: solid #154565; border-width: 7px 4px; border-radius: 4px; position: relative;
   }
   .filmstrip::before, .filmstrip::after{
-    content:""; position:absolute; left:5px; right:5px; height:3px;
-    background-image: radial-gradient(circle, #BFCFD9 1.2px, transparent 1.4px);
+    content:""; position:absolute; left:2px; right:2px; height:3px;
+    background-image: radial-gradient(circle, #E8EEF2 1.2px, transparent 1.4px);
     background-size: 8px 3px; background-repeat: repeat-x;
   }
-  .filmstrip::before{ top: 1px; }
-  .filmstrip::after{ bottom: 1px; }
-  .filmstrip-frame{ flex: 1; height: 14px; background: #E8EEF2; border-radius: 1px; }
+  .filmstrip::before{ top: -5px; }
+  .filmstrip::after{ bottom: -5px; }
+  .filmstrip-frame{ flex: 1; height: 14px; background: transparent; border-left: 3px solid #154565; }
+  .filmstrip-frame:first-child{ border-left: none; }
   .filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
   .filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
   .filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
@@ -144,7 +145,12 @@
 
   .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
   .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
-  .desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+  .desc{
+    font-size: 0.87rem; color: #526A7A; max-width: 72ch; margin: 0; cursor: pointer;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--linie-opisu); line-clamp: var(--linie-opisu); overflow: hidden;
+  }
+  .desc.rozwiniete{ display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; }
+  .card-main{ min-height: 118px; min-width: 0; }
   .kolejny{ font-size: 0.82rem; color: #154565; margin: 0 0 8px; }
   .kolejny .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
 
@@ -221,6 +227,17 @@
   .location-btn{ position: relative; display: block; cursor: pointer; }
   .location-btn.brak{ color: #526A7A; border-style: dashed; }
   .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .obejrzane-row{ display:flex; align-items:center; gap: 6px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .obej-etykieta{ font-size: 0.74rem; font-weight: 700; color: #154565; margin-right: 4px; }
+  .season-chip.obejrzany{ background: #154565; border-color: #154565; color: #F4F7F8; }
+  .obejrzane-row .season-chip{ min-width: 48px; padding: 5px 8px; }
+  .obejrzany-tag{
+    font-weight: 700; font-size: 0.72rem; padding: 6px 9px; border: 1px solid #154565; border-radius: 8px;
+    width: 100%; text-align: center; color: #F4F7F8; background: #154565;
+  }
+  .chips-sep{ width: 10px; }
+  .chip.chip-ob{ border-color: #154565; color: #154565; }
+  .chip.chip-ob.active{ background: #154565; color: #F4F7F8; }
   .zrodlo{ text-align: center; font-size: 0.7rem; color: #526A7A; margin-top: 24px; }
   .zrodlo a{ color: inherit; }
 
@@ -237,7 +254,6 @@
   .tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
   .tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
   .tag:hover{ filter: brightness(0.95); }
-  .tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
 
   .location-btn{
     font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
@@ -281,7 +297,7 @@
   </div>
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
-  <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
+  <div class="empty" id="pusto" style="display:none;">brak seriali pasujących do wyszukiwania</div>
   <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
   <div class="zrodlo">dane: <a href="https://www.tvmaze.com" target="_blank" rel="noopener">TVmaze</a></div>
 </div>
@@ -298,7 +314,7 @@
   const STATUS_NOWEGO = 'oczekiwany';
 
   // Zakładki w nagłówku: [nazwa, numer strony w Griście]. Klik przenosi na tę stronę.
-  const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
+  const ADRES_STRON = 'https://dio.getgrist.com/tKjpkmVjijQj/SERIALE/p/';
   const ZAKLADKI = [['seriale', 2], ['archiwum', 5], ['nowości', 3], ['lista życzeń', 4]];
   const AKTYWNA_ZAKLADKA = 'seriale';
 
@@ -308,6 +324,8 @@
   let dyskiDane = [];
   let strona = 1;
   let filtrStatusu = 'wszystkie';
+  let filtrObejrzenia = 'wszystkie';   // 'wszystkie' | 'do' (nieobejrzane) | 'ob' (obejrzane)
+  let mamObejrzane = false;             // czy tabela Seriale ma już kolumnę obejrzane
 
   function escapeHtml(tekst){
     const div = document.createElement('div');
@@ -327,9 +345,12 @@
   // Nie zużywa to limitu wywołań API Grista.
   function plakatHtml(r){
     const litera = escapeHtml(inicjalTytulu(r.tytul));
+    const adresTv = (r.plakat_url || '').trim();
     const sciezka = (r.plakat_tmdb || '').trim();
-    if(/^\/[A-Za-z0-9_\-.]+$/.test(sciezka)){
-      const adres = 'https://image.tmdb.org/t/p/w185' + sciezka;
+    let adres = '';
+    if(/^https:\/\/static\.tvmaze\.com\/uploads\/images\/[A-Za-z0-9_\-\/.]+$/.test(adresTv)) adres = adresTv;
+    else if(/^\/[A-Za-z0-9_\-.]+$/.test(sciezka)) adres = 'https://image.tmdb.org/t/p/w185' + sciezka;
+    if(adres){
       return '<div class="poster"><span>' + litera + '</span><img src="' + adres +
              '" alt="" loading="lazy" onerror="this.remove()"></div>';
     }
@@ -404,7 +425,7 @@
     document.getElementById('dodaj-anuluj').addEventListener('click', () => przelaczPanel(false));
     const wyslij = async () => {
       const d = odczytajFormularz();
-      if(!d.tytul){ pokazBlad('Wpisz tytuł.'); return; }
+      if(!d.tytul){ pokazBlad('wpisz tytuł'); return; }
       await dodaj(d);
     };
     document.getElementById('dodaj-zapisz').addEventListener('click', wyslij);
@@ -412,6 +433,12 @@
       if(ev.key === 'Enter'){ ev.preventDefault(); wyslij(); }
     });
   }
+
+  // Długie opisy są przycięte do kilku linii; dotknięcie opisu rozwija go (i zwija z powrotem).
+  document.addEventListener('click', (ev) => {
+    const opis = ev.target.closest('.desc');
+    if(opis) opis.classList.toggle('rozwiniete');
+  });
 
   // Tytuł jako link do strony serialu na epguides (jeśli jest link).
   function tytulHtml(r){
@@ -427,6 +454,7 @@
   }
 
   let liczbaNowosci = 0;   // ile pozycji czeka w tabeli Nowosci (kropka przy zakładce)
+  let nowosciTvIds = new Set();   // numery TVmaze pozycji z Nowości
 
   function renderujNav(){
     document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
@@ -467,15 +495,21 @@
     document.getElementById('dyski').innerHTML = html;
   }
 
-  function renderujChipy(policzone){
+  function renderujChipy(policzone, ob){
     const etykiety = ['wszystkie'].concat(STATUSY_W_WIDOKU);
-    document.getElementById('chips').innerHTML = etykiety.map(s => {
+    let html = etykiety.map(s => {
       const ile = s === 'wszystkie'
         ? STATUSY_W_WIDOKU.reduce((suma, st) => suma + (policzone[st] || 0), 0)
         : (policzone[s] || 0);
       return '<button class="chip' + (s === filtrStatusu ? ' active' : '') +
         '" data-status="' + escapeHtml(s) + '">' + escapeHtml(s) + ' (' + ile + ')</button>';
     }).join('');
+    if(mamObejrzane && ob){
+      html += '<span class="chips-sep"></span>' +
+        '<button class="chip chip-ob' + (filtrObejrzenia === 'do' ? ' active' : '') + '" data-obf="do">nieobejrzane (' + ob.doObejrzenia + ')</button>' +
+        '<button class="chip chip-ob' + (filtrObejrzenia === 'ob' ? ' active' : '') + '" data-obf="ob">obejrzane (' + ob.obejrzane + ')</button>';
+    }
+    document.getElementById('chips').innerHTML = html;
   }
 
   function renderujPager(liczbaStron){
@@ -502,10 +536,12 @@
 
     const policzone = {};
     wWidoku.forEach(r => { policzone[r.status] = (policzone[r.status] || 0) + 1; });
-    renderujChipy(policzone);
+    const nieobejrzane = mamObejrzane ? wWidoku.filter(r => !czyObejrzany(r)).length : 0;
+    renderujChipy(policzone, { doObejrzenia: nieobejrzane, obejrzane: wWidoku.length - nieobejrzane });
 
     const pasujace = wWidoku
       .filter(r => filtrStatusu === 'wszystkie' || r.status === filtrStatusu)
+      .filter(r => !mamObejrzane || filtrObejrzenia === 'wszystkie' || (filtrObejrzenia === 'ob' ? czyObejrzany(r) : !czyObejrzany(r)))
       .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
 
     const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
@@ -545,11 +581,15 @@
 
       const model = POKAZ_ODCINKI ? modelOdcinkow(r) : null;
       let nastepnyHtml = '', dolHtml = '';
+      const obejrzaneHtml = mamObejrzane ? wierszObejrzanych(r) : '';
       if(model){
         kolejnyHtml = '';
         nastepnyHtml = pigulkaKolejnego(model);
-        dolHtml = '<div class="card-dol">' + siatkaOdcinkow(r, model) + '</div>';
+        dolHtml = '<div class="card-dol">' + siatkaOdcinkow(r, model) + obejrzaneHtml + '</div>';
+      } else if(obejrzaneHtml){
+        dolHtml = '<div class="card-dol">' + obejrzaneHtml + '</div>';
       }
+      const obejrzanyTag = (mamObejrzane && czyObejrzany(r)) ? '<div class="obejrzany-tag">✓ obejrzany</div>' : '';
       karta.innerHTML =
         plakatHtml(r) +
         '<div class="card-main">' +
@@ -562,8 +602,8 @@
         '<div class="card-side">' +
           nastepnyHtml +
           '<button class="tag ' + escapeHtml(r.status || '') + '" data-id="' + r.id + '">' + escapeHtml(r.status || '—') + '</button>' +
-          '<div class="tag-hint">kliknij, by zmienić</div>' +
-          '<label class="location-btn' + (r.dysk ? '' : ' brak') + '" title="kliknij, by zmienić dysk">' +
+          obejrzanyTag +
+          '<label class="location-btn' + (r.dysk ? '' : ' brak') + '">' +
             escapeHtml(r.dysk || 'wybierz dysk') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') +
             '<select class="dysk-wybor" data-id="' + r.id + '" aria-label="dysk">' +
               ['', 'dysk_0', 'dysk_1', 'dysk_2'].map(o => '<option value="' + o + '"' + (o === (r.dysk || '') ? ' selected' : '') + '>' + (o || '— brak —') + '</option>').join('') +
@@ -712,6 +752,85 @@
     return statusTvm === 'Ended' ? 'kompletny' : 'oczekiwany';
   }
 
+  // ---- Obejrzane sezony (znacznik na poziomie sezonu, kolumna "obejrzane": np. "S01,S02" albo "ALL") ----
+  function sezonyObejrzane(tekst){
+    const zbior = new Set();
+    const t = (tekst || '').toUpperCase();
+    if(/\bALL\b/.test(t)) zbior.add('ALL');
+    (t.match(/S(\d{1,3})/g) || []).forEach(x => zbior.add(Number(x.slice(1))));
+    return zbior;
+  }
+  function zapiszObejrzane(zbior){
+    if(zbior.has('ALL')) return 'ALL';
+    return Array.from(zbior).filter(x => x !== 'ALL').sort((a, b) => a - b).map(n => 'S' + pad2(n)).join(',');
+  }
+  // numery sezonów, które da się obejrzeć: z historii sezonów i z dat odcinków
+  function sezonyKarty(r){
+    const numery = new Set();
+    const re = /S(\d{1,3}):/g;
+    let m;
+    const h = r.historia_sezonow || '';
+    while((m = re.exec(h)) !== null) numery.add(Number(m[1]));
+    parsujTvm(r.odcinki_tvm).forEach((_, k) => numery.add(k));
+    numery.delete(0);
+    return Array.from(numery).sort((a, b) => a - b);
+  }
+  function czyObejrzany(r){
+    const ob = sezonyObejrzane(r.obejrzane);
+    if(ob.has('ALL')) return true;
+    const sezony = sezonyKarty(r);
+    return sezony.length > 0 && sezony.every(n => ob.has(n));
+  }
+  function wierszObejrzanych(r){
+    const ob = sezonyObejrzane(r.obejrzane);
+    const sezony = sezonyKarty(r);
+    let chipy;
+    if(sezony.length === 0){
+      chipy = '<button class="season-chip' + (ob.has('ALL') ? ' obejrzany' : '') + '" data-ob="ALL" data-id="' + r.id + '">całość</button>';
+    } else {
+      chipy = sezony.map(n => '<button class="season-chip' + ((ob.has('ALL') || ob.has(n)) ? ' obejrzany' : '') +
+        '" data-ob="' + n + '" data-id="' + r.id + '">S' + pad2(n) + '</button>').join('');
+      chipy += '<button class="mini-btn" data-ob="WSZYSTKIE" data-id="' + r.id + '">wszystkie</button>';
+    }
+    return '<div class="obejrzane-row"><span class="obej-etykieta">obejrzane</span>' + chipy + '</div>';
+  }
+  async function zmienObejrzane(id, ktore){
+    const r = wszystkieRekordy.find(x => x.id === id);
+    if(!r) return;
+    const sezony = sezonyKarty(r);
+    const zbior = sezonyObejrzane(r.obejrzane);
+    if(ktore === 'ALL'){
+      const bylo = zbior.has('ALL');
+      zbior.clear();
+      if(!bylo) zbior.add('ALL');
+    } else if(ktore === 'WSZYSTKIE'){
+      const wszystkie = zbior.has('ALL') || sezony.every(n => zbior.has(n));
+      zbior.clear();
+      if(!wszystkie) sezony.forEach(n => zbior.add(n));
+    } else {
+      if(zbior.has('ALL')){ zbior.clear(); sezony.forEach(n => zbior.add(n)); }
+      const n = Number(ktore);
+      if(zbior.has(n)) zbior.delete(n); else zbior.add(n);
+    }
+    const stary = r.obejrzane || '';
+    const nowy = zapiszObejrzane(zbior);
+    r.obejrzane = nowy;
+    renderuj();
+    try{
+      await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, { obejrzane: nowy }]]);
+    } catch(e){
+      r.obejrzane = stary;
+      renderuj();
+      pokazBlad('nie udało się zapisać obejrzanych sezonów: ' + e.message);
+    }
+  }
+  function obsluzObejrzane(ev){
+    const b = ev.target.closest('button[data-ob]');
+    if(!b) return false;
+    zmienObejrzane(Number(b.dataset.id), b.dataset.ob);
+    return true;
+  }
+
   function pigulkaKolejnego(m){
     if(!m || !m.kolejny) return '';
     const dostepny = m.kolejny.data && m.kolejny.data <= m.dzis;
@@ -822,15 +941,15 @@
     Object.assign(r, pola);
     renderuj();
     if(zakonczone.length){
-      pokazKomunikat('Sezon ' + zakonczone.map(s => 'S' + pad2(s)).join(', ') + ' skompletowany' +
-        (pola.status ? ' — status: ' + pola.status : '') + '.');
+      pokazKomunikat('sezon ' + zakonczone.map(s => 'S' + pad2(s)).join(', ') + ' skompletowany' +
+        (pola.status ? ' — status: ' + pola.status : ''));
     }
     try{
       await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, pola]]);
     } catch(e){
       Object.assign(r, stare);
       renderuj();
-      pokazBlad('Nie udało się zapisać odcinków: ' + e.message);
+      pokazBlad('nie udało się zapisać odcinków: ' + e.message);
     }
   }
 
@@ -853,7 +972,7 @@
     const istniejacy = wszystkieRekordy.find(x => (x.tytul || '').toLowerCase() === t &&
       (!rok || !x.rok || Number(x.rok) === Number(rok)));
     if(istniejacy){
-      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (istniejacy.status || '—') + ').');
+      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (istniejacy.status || '—') + ')');
       return;
     }
     const pola = { tytul: f.tytul, status: STATUS_NOWEGO };
@@ -864,10 +983,10 @@
       await grist.docApi.applyUserActions([['AddRecord', 'Seriale', null, pola]]);
       przelaczPanel(false);
       wyczyscFormularz();
-      pokazKomunikat('Dodano „' + f.tytul + '” (status: ' + STATUS_NOWEGO + ').');
+      pokazKomunikat('dodano „' + f.tytul + '” (status: ' + STATUS_NOWEGO + ')');
       await wczytajDane();
     } catch(e){
-      pokazBlad('Nie udało się dodać: ' + e.message);
+      pokazBlad('nie udało się dodać: ' + e.message);
     }
   }
 
@@ -885,7 +1004,7 @@
       r.dysk = stary;
       renderuj();
       renderujDyski();
-      pokazBlad('Nie udało się zmienić dysku: ' + e.message);
+      pokazBlad('nie udało się zmienić dysku: ' + e.message);
     }
   }
 
@@ -911,7 +1030,7 @@
       rekord.status = nowyStatus;
       renderuj();
     } catch(e){
-      pokazBlad('Nie udało się zapisać zmiany statusu: ' + e.message);
+      pokazBlad('nie udało się zapisać zmiany statusu: ' + e.message);
       btn.disabled = false;
     }
   }
@@ -933,6 +1052,9 @@
     try{
       const n = await grist.docApi.fetchTable('Nowosci');
       liczbaNowosci = n.id.length;
+      nowosciTvIds = new Set();
+      (n.tvmaze_id || []).forEach(x => { if(Number(x) > 0) nowosciTvIds.add(Number(x)); });
+      (n.link_epguides || []).forEach(l => { const m = /tvmaze\.com\/shows\/(\d+)/.exec(l || ''); if(m) nowosciTvIds.add(Number(m[1])); });
     } catch(e){
       liczbaNowosci = 0;
     }
@@ -943,6 +1065,7 @@
     try{
       const tabela = await grist.docApi.fetchTable('Seriale');
       const liczbaWierszy = tabela.id.length;
+      mamObejrzane = Boolean(tabela.obejrzane);
       wszystkieRekordy = [];
       for(let i = 0; i < liczbaWierszy; i++){
         wszystkieRekordy.push({
@@ -955,10 +1078,12 @@
           rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
           opis: tabela.opis ? tabela.opis[i] : '',
           plakat_tmdb: tabela.plakat_tmdb ? tabela.plakat_tmdb[i] : '',
+          plakat_url: tabela.plakat_url ? tabela.plakat_url[i] : '',
           link_epguides: tabela.link_epguides ? tabela.link_epguides[i] : '',
           odcinki_tvm: tabela.odcinki_tvm ? tabela.odcinki_tvm[i] : '',
           odcinki_nagrane: tabela.odcinki_nagrane ? tabela.odcinki_nagrane[i] : '',
           status_tvm: tabela.status_tvm ? tabela.status_tvm[i] : '',
+          obejrzane: tabela.obejrzane ? tabela.obejrzane[i] : '',
           kolejny: tabela.kolejny ? tabela.kolejny[i] : '',
           kolejny_data: tabela.kolejny_data ? tabela.kolejny_data[i] : null,
           zalegle: tabela.zalegle ? tabela.zalegle[i] : 0,
@@ -969,12 +1094,15 @@
       renderujDyski();
       renderuj();
     } catch(e){
-      pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
+      pokazBlad('nie udało się wczytać danych z Grista: ' + e.message);
     }
   }
 
   // Jedna obsługa kliknięć dla całej strony.
   document.addEventListener('click', (ev) => {
+    if(obsluzObejrzane(ev)) return;
+    const chipOb = ev.target.closest('.chip[data-obf]');
+    if(chipOb){ filtrObejrzenia = (filtrObejrzenia === chipOb.dataset.obf) ? 'wszystkie' : chipOb.dataset.obf; strona = 1; renderuj(); return; }
     if(POKAZ_ODCINKI && obsluzOdcinki(ev)) return;
     const tag = ev.target.closest('.tag[data-id]');
     if(tag){ onKlikStatus(tag); return; }

@@ -9,7 +9,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-  :root{ color-scheme: light; }
+  :root{ color-scheme: light; --linie-opisu: 3; }   /* ile linii opisu widać na karcie */
   *{ box-sizing: border-box; }
   html{ background: #F4F7F8; color-scheme: light; }
 
@@ -58,17 +58,18 @@
   }
   .disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
   .filmstrip{
-    display:flex; align-items:center; gap: 2px;
-    background: #FFFFFF; border: 1px solid #BFCFD9; padding: 4px 5px; border-radius: 4px; position: relative;
+    display:flex; align-items:stretch;
+    background: transparent; border: solid #154565; border-width: 7px 4px; border-radius: 4px; position: relative;
   }
   .filmstrip::before, .filmstrip::after{
-    content:""; position:absolute; left:5px; right:5px; height:3px;
-    background-image: radial-gradient(circle, #BFCFD9 1.2px, transparent 1.4px);
+    content:""; position:absolute; left:2px; right:2px; height:3px;
+    background-image: radial-gradient(circle, #E8EEF2 1.2px, transparent 1.4px);
     background-size: 8px 3px; background-repeat: repeat-x;
   }
-  .filmstrip::before{ top: 1px; }
-  .filmstrip::after{ bottom: 1px; }
-  .filmstrip-frame{ flex: 1; height: 14px; background: #E8EEF2; border-radius: 1px; }
+  .filmstrip::before{ top: -5px; }
+  .filmstrip::after{ bottom: -5px; }
+  .filmstrip-frame{ flex: 1; height: 14px; background: transparent; border-left: 3px solid #154565; }
+  .filmstrip-frame:first-child{ border-left: none; }
   .filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
   .filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
   .filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
@@ -144,7 +145,12 @@
 
   .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
   .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
-  .desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+  .desc{
+    font-size: 0.87rem; color: #526A7A; max-width: 72ch; margin: 0; cursor: pointer;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--linie-opisu); line-clamp: var(--linie-opisu); overflow: hidden;
+  }
+  .desc.rozwiniete{ display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; }
+  .card-main{ min-height: 118px; min-width: 0; }
   .kolejny{ font-size: 0.82rem; color: #154565; margin: 0 0 8px; }
   .kolejny .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
 
@@ -221,6 +227,17 @@
   .location-btn{ position: relative; display: block; cursor: pointer; }
   .location-btn.brak{ color: #526A7A; border-style: dashed; }
   .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .obejrzane-row{ display:flex; align-items:center; gap: 6px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .obej-etykieta{ font-size: 0.74rem; font-weight: 700; color: #154565; margin-right: 4px; }
+  .season-chip.obejrzany{ background: #154565; border-color: #154565; color: #F4F7F8; }
+  .obejrzane-row .season-chip{ min-width: 48px; padding: 5px 8px; }
+  .obejrzany-tag{
+    font-weight: 700; font-size: 0.72rem; padding: 6px 9px; border: 1px solid #154565; border-radius: 8px;
+    width: 100%; text-align: center; color: #F4F7F8; background: #154565;
+  }
+  .chips-sep{ width: 10px; }
+  .chip.chip-ob{ border-color: #154565; color: #154565; }
+  .chip.chip-ob.active{ background: #154565; color: #F4F7F8; }
   .zrodlo{ text-align: center; font-size: 0.7rem; color: #526A7A; margin-top: 24px; }
   .zrodlo a{ color: inherit; }
 
@@ -237,7 +254,6 @@
   .tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
   .tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
   .tag:hover{ filter: brightness(0.95); }
-  .tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
 
   .location-btn{
     font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
@@ -277,6 +293,10 @@
   }
   .reject-btn:hover{ border-color:#CB704D; color:#CB704D; }
   .reject-btn.confirm{ border-color:#CB704D; background:#CB704D; color:#F4F7F8; }
+  .tytul-edycja{
+    font-family: inherit; font-size: 0.85rem; padding: 8px 10px; border: 1px solid #4FA3DA; border-radius: 8px;
+    background: #FFFFFF; color: #154565; width: 230px; max-width: 100%;
+  }
   .info-tag{
     font-size:0.72rem; font-weight:600; padding:6px 9px; border:1px solid #4FA3DA;
     color:#2C7DB3; background:#E5EFF5; border-radius:8px;
@@ -372,7 +392,7 @@
     </div>
     <div class="filtry" id="filtry"><div class="pager" id="pager-gora"></div></div>
     <div class="cards" id="lista"></div>
-    <div class="empty" id="pusto" style="display:none;">Lista życzeń jest pusta.</div>
+    <div class="empty" id="pusto" style="display:none;">lista życzeń jest pusta</div>
     <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
   </div>
 
@@ -390,7 +410,7 @@
 </div>
 
 <script>
-  const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
+  const ADRES_STRON = 'https://dio.getgrist.com/tKjpkmVjijQj/SERIALE/p/';
   const ZAKLADKI = [['seriale', 2], ['archiwum', 5], ['nowości', 3], ['lista życzeń', 4]];
   const AKTYWNA_ZAKLADKA = 'lista życzeń';
   const LICZBA_KLATEK = 6;
@@ -401,6 +421,8 @@
   let strona = 1;
   let naglowekWczytany = false;
   let serialeMaPlakatTmdb = false;   // czy tabela Seriale ma już kolumnę plakat_tmdb
+  let serialeMaTvmazeId = false;     // czy tabela Seriale ma już kolumnę tvmaze_id
+  let serialeMaPlakatUrl = false;    // czy tabela Seriale ma już kolumnę plakat_url
 
   function pad2(n){ return String(n).padStart(2, '0'); }
 
@@ -432,12 +454,15 @@
   async function wczytajSeriale(){
     const tabela = await grist.docApi.fetchTable('Seriale');
     serialeMaPlakatTmdb = Boolean(tabela.plakat_tmdb);
+    serialeMaTvmazeId = Boolean(tabela.tvmaze_id);
+    serialeMaPlakatUrl = Boolean(tabela.plakat_url);
     wszystkieRekordy = [];
     for(let i = 0; i < tabela.id.length; i++){
       wszystkieRekordy.push({
         id: tabela.id[i],
         tytul: tabela.tytul ? tabela.tytul[i] : '',
         rok: tabela.rok ? tabela.rok[i] : '',
+        tvmaze_id: tabela.tvmaze_id ? tabela.tvmaze_id[i] : null,
         status: tabela.status ? tabela.status[i] : '',
         dysk: tabela.dysk ? tabela.dysk[i] : '',
         rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
@@ -459,6 +484,7 @@
     if(r.rok) pola.rok = r.rok;
     if(Array.isArray(r.plakat)) pola.plakat = r.plakat;
     if(r.plakat_tmdb && serialeMaPlakatTmdb) pola.plakat_tmdb = r.plakat_tmdb;
+    if(r.plakat_url && serialeMaPlakatUrl) pola.plakat_url = r.plakat_url;
     return pola;
   }
 
@@ -480,9 +506,12 @@
   // Nie zużywa to limitu wywołań API Grista.
   function plakatHtml(r){
     const litera = escapeHtml(inicjalTytulu(r.tytul));
+    const adresTv = (r.plakat_url || '').trim();
     const sciezka = (r.plakat_tmdb || '').trim();
-    if(/^\/[A-Za-z0-9_\-.]+$/.test(sciezka)){
-      const adres = 'https://image.tmdb.org/t/p/w185' + sciezka;
+    let adres = '';
+    if(/^https:\/\/static\.tvmaze\.com\/uploads\/images\/[A-Za-z0-9_\-\/.]+$/.test(adresTv)) adres = adresTv;
+    else if(/^\/[A-Za-z0-9_\-.]+$/.test(sciezka)) adres = 'https://image.tmdb.org/t/p/w185' + sciezka;
+    if(adres){
       return '<div class="poster"><span>' + litera + '</span><img src="' + adres +
              '" alt="" loading="lazy" onerror="this.remove()"></div>';
     }
@@ -557,7 +586,7 @@
     document.getElementById('dodaj-anuluj').addEventListener('click', () => przelaczPanel(false));
     const wyslij = async () => {
       const d = odczytajFormularz();
-      if(!d.tytul){ pokazBlad('Wpisz tytuł.'); return; }
+      if(!d.tytul){ pokazBlad('wpisz tytuł'); return; }
       await dodaj(d);
     };
     document.getElementById('dodaj-zapisz').addEventListener('click', wyslij);
@@ -565,6 +594,12 @@
       if(ev.key === 'Enter'){ ev.preventDefault(); wyslij(); }
     });
   }
+
+  // Długie opisy są przycięte do kilku linii; dotknięcie opisu rozwija go (i zwija z powrotem).
+  document.addEventListener('click', (ev) => {
+    const opis = ev.target.closest('.desc');
+    if(opis) opis.classList.toggle('rozwiniete');
+  });
 
   // Tytuł jako link do strony serialu na epguides (jeśli jest link).
   function tytulHtml(r){
@@ -580,6 +615,7 @@
   }
 
   let liczbaNowosci = 0;   // ile pozycji czeka w tabeli Nowosci (kropka przy zakładce)
+  let nowosciTvIds = new Set();   // numery TVmaze pozycji z Nowości
 
   function renderujNav(){
     document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
@@ -637,6 +673,9 @@
     try{
       const n = await grist.docApi.fetchTable('Nowosci');
       liczbaNowosci = n.id.length;
+      nowosciTvIds = new Set();
+      (n.tvmaze_id || []).forEach(x => { if(Number(x) > 0) nowosciTvIds.add(Number(x)); });
+      (n.link_epguides || []).forEach(l => { const m = /tvmaze\.com\/shows\/(\d+)/.exec(l || ''); if(m) nowosciTvIds.add(Number(m[1])); });
     } catch(e){
       liczbaNowosci = 0;
     }
@@ -657,6 +696,9 @@
 
 
   let zyczenia = [];
+  let zyczeniaMaPlakatUrl = false;   // czy ListaZyczen ma już kolumnę plakat_url
+  let zyczeniaMaTvmazeId = false;    // czy ListaZyczen ma już kolumnę tvmaze_id
+  let odrzuconeTvIds = new Set();    // numery TVmaze seriali odrzuconych albo pominiętych (tabela Odrzucone)
   let wybranySezon = {};       // id rekordu -> numer wybranego sezonu
   let oczekujeArchiwum = null; // id rekordu, który czeka na potwierdzenie przeniesienia
 
@@ -782,7 +824,7 @@
 
       let dol = '';
       if(sezony.length === 0){
-        dol = '<div class="brak-sezonow">Brak informacji o sezonach — uzupełnij pole „sezony (całość)” w tabeli, np. „[✓] S01: 10 odc.”.</div>';
+        dol = '<div class="brak-sezonow">brak informacji o sezonach</div>';
       } else {
         const chipy = sezony.map(s => {
           const mam = policzSezon(s, posiadane);
@@ -809,7 +851,7 @@
               '<button class="mini-btn" data-akcja="wyczysc" data-id="' + r.id + '" data-nr="' + sel.nr + '">wyczyść</button>' +
             '</div><div class="ep-grid">' + piksele + '</div>';
         } else if(sel){
-          siatka = '<div class="brak-sezonow">Nieznana liczba odcinków w sezonie S' + pad2(sel.nr) + '.</div>';
+          siatka = '<div class="brak-sezonow">nieznana liczba odcinków w sezonie S' + pad2(sel.nr) + '</div>';
         }
         dol = '<div class="season-row">' + chipy + '</div>' + siatka;
       }
@@ -847,7 +889,7 @@
         ['UpdateRecord', 'ListaZyczen', rekord.id, { odcinki_posiadane: tekst }]
       ]);
     } catch(e){
-      pokazBlad('Nie udało się zapisać zmiany: ' + e.message);
+      pokazBlad('nie udało się zapisać zmiany: ' + e.message);
       await wczytajDane();
     }
   }
@@ -876,10 +918,10 @@
       await grist.docApi.applyUserActions(akcje);
       zyczenia = zyczenia.filter(x => x.id !== id);
       oczekujeArchiwum = null;
-      pokazKomunikat('Przeniesiono „' + r.tytul + '” do archiwum.');
+      pokazKomunikat('przeniesiono „' + r.tytul + '” do archiwum');
       renderuj();
     } catch(e){
-      pokazBlad('Nie udało się przenieść do archiwum: ' + e.message);
+      pokazBlad('nie udało się przenieść do archiwum: ' + e.message);
     }
   }
 
@@ -890,11 +932,11 @@
     const t = f.tytul.toLowerCase();
     const wBazie = znajdzWSerialach(d.tytul, rok);
     if(wBazie){
-      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (wBazie.status || '—') + ').');
+      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (wBazie.status || '—') + ')');
       return;
     }
     if(zyczenia.some(x => doFormatuBazy(x.tytul).tytul.toLowerCase() === t)){
-      pokazBlad('„' + f.tytul + '” jest już na liście życzeń.');
+      pokazBlad('„' + f.tytul + '” jest już na liście życzeń');
       return;
     }
     const pola = { tytul: f.tytul };
@@ -905,10 +947,10 @@
       await grist.docApi.applyUserActions([['AddRecord', 'ListaZyczen', null, pola]]);
       przelaczPanel(false);
       wyczyscFormularz();
-      pokazKomunikat('Dodano „' + f.tytul + '” do listy życzeń. Uzupełnij „sezony (całość)”, żeby móc odklikiwać odcinki.');
+      pokazKomunikat('dodano „' + f.tytul + '” do listy życzeń');
       await wczytajDane();
     } catch(e){
-      pokazBlad('Nie udało się dodać: ' + e.message);
+      pokazBlad('nie udało się dodać: ' + e.message);
     }
   }
 
@@ -928,12 +970,22 @@
           opis: t.opis ? t.opis[i] : '',
           plakat: t.plakat ? t.plakat[i] : null,
           plakat_tmdb: t.plakat_tmdb ? t.plakat_tmdb[i] : '',
+          plakat_url: t.plakat_url ? t.plakat_url[i] : '',
+          tvmaze_id: t.tvmaze_id ? t.tvmaze_id[i] : null,
         });
       }
+      zyczeniaMaPlakatUrl = Boolean(t.plakat_url);
+      zyczeniaMaTvmazeId = Boolean(t.tvmaze_id);
+      indeksNazw = null;
+      try{
+        const o = await grist.docApi.fetchTable('Odrzucone');
+        odrzuconeTvIds = new Set();
+        (o.link || []).forEach(l => { const m = /tvmaze\.com\/shows\/(\d+)/.exec(l || ''); if(m) odrzuconeTvIds.add(Number(m[1])); });
+      } catch(e){ odrzuconeTvIds = new Set(); }
       await wczytajNaglowek();
       renderuj();
     } catch(e){
-      pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
+      pokazBlad('nie udało się wczytać danych z Grista: ' + e.message);
     }
   }
 
@@ -998,6 +1050,7 @@
   let tvPominiete = new Set();
   let tvDodane = new Set();
   let tvPozycjaWczytana = false;
+  let tvEdycjaId = null;           // pozycja, której tytuł poprawiasz przed dodaniem
 
   function tvRok(s){ return s.premiered ? Number(String(s.premiered).slice(0, 4)) : null; }
   function tvKodKraju(n){
@@ -1024,13 +1077,36 @@
     return true;
   }
 
-  // Czy taki serial już jest w bazie ("baza") albo na liście życzeń ("lista")?
+  // Nazwa bez wielkości liter, rodzajnika i znaków specjalnych (do porównań)
+  function normNazwy(t){
+    let s = doFormatuBazy(t).tytul.toLowerCase().replace(/,\s*(the|a|an)$/, '');
+    return s.replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '');
+  }
+  let indeksNazw = null;
+  function zbudujIndeksNazw(){
+    indeksNazw = [];
+    wszystkieRekordy.forEach(x => indeksNazw.push({ n: normNazwy(x.tytul), rok: Number(x.rok) || null, gdzie: 'baza' }));
+    zyczenia.forEach(x => indeksNazw.push({ n: normNazwy(x.tytul), rok: Number(x.rok || doFormatuBazy(x.tytul).rokZNazwy) || null, gdzie: 'lista' }));
+  }
+
+  // Gdzie już jest ten serial? 'odrzucone' | 'baza' | 'lista' | 'nowosci' | '' (nigdzie).
+  // Najpierw po numerze TVmaze (pewne), potem po nazwie (dla wierszy bez numeru): identyczna nazwa
+  // albo nazwa z przedrostkiem uniwersum ("Star Wars: Andor" = "Andor"), z zgodnym rokiem premiery.
   function tvGdzie(s){
-    const t = doFormatuBazy(s.name).tytul.toLowerCase();
+    const id = s.id;
+    if(odrzuconeTvIds.has(id)) return 'odrzucone';
+    if(wszystkieRekordy.some(x => Number(x.tvmaze_id) === id)) return 'baza';
+    if(zyczenia.some(x => Number(x.tvmaze_id) === id)) return 'lista';
+    if(nowosciTvIds.has(id)) return 'nowosci';
+    if(!indeksNazw) zbudujIndeksNazw();
+    const tn = normNazwy(s.name);
     const rok = tvRok(s);
-    const zgodnyRok = (a) => !rok || !a || Math.abs(Number(a) - rok) <= 1;
-    if(zyczenia.some(x => { const f = doFormatuBazy(x.tytul); return f.tytul.toLowerCase() === t && zgodnyRok(x.rok || f.rokZNazwy); })) return 'lista';
-    if(wszystkieRekordy.some(x => (x.tytul || '').toLowerCase() === t && zgodnyRok(x.rok))) return 'baza';
+    for(const e of indeksNazw){
+      if(rok && e.rok && Math.abs(e.rok - rok) > 1) continue;
+      if(e.n === tn) return e.gdzie;
+      if(rok && e.rok && tn.length >= 5 && e.n.endsWith(tn)) return e.gdzie;
+      if(rok && e.rok && e.n.length >= 5 && tn.endsWith(e.n)) return e.gdzie;
+    }
     return '';
   }
 
@@ -1077,28 +1153,28 @@
   function tvStan(tekst){ document.getElementById('stan-tv').textContent = tekst || ''; }
 
   async function zaladujPartie(){
-    tvStan('Pobieram z TVmaze…');
+    tvStan('pobieram z TVmaze…');
     try{
       await wczytajPozycjeTv();
       tvTryb = 'partie';
       tvPozycje = await tvPartia();
       await zapiszPozycjeTv();
-      tvStan(tvPozycje.length === 0 && tvKoniec ? 'To już koniec listy TVmaze.' : '');
+      tvStan(tvPozycje.length === 0 && tvKoniec ? 'to już koniec listy TVmaze' : '');
     } catch(e){
-      tvStan('Nie udało się pobrać danych z TVmaze: ' + e.message);
+      tvStan('nie udało się pobrać danych z TVmaze: ' + e.message);
     }
     renderujTv();
   }
 
   async function szukajTv(fraza){
-    tvStan('Szukam w TVmaze…');
+    tvStan('szukam w TVmaze…');
     try{
       const wynik = await tvPobierz('/search/shows?q=' + encodeURIComponent(fraza));
       tvTryb = 'szukaj';
       tvPozycje = (wynik || []).map(w => w.show).filter(Boolean);
-      tvStan(tvPozycje.length === 0 ? 'Nic nie znaleziono.' : '');
+      tvStan(tvPozycje.length === 0 ? 'nic nie znaleziono' : '');
     } catch(e){
-      tvStan('Nie udało się wyszukać w TVmaze: ' + e.message);
+      tvStan('nie udało się wyszukać w TVmaze: ' + e.message);
     }
     renderujTv();
   }
@@ -1116,8 +1192,14 @@
       const przyciski = gdzie === 'dodano' ? '<span class="info-tag">✓ dodano</span>'
         : gdzie === 'lista' ? '<span class="info-tag">na liście</span>'
         : gdzie === 'baza' ? '<span class="info-tag">w bazie</span>'
-        : '<button class="reject-btn" data-tv="pomin" data-id="' + s.id + '">pomiń</button>' +
-          '<button class="add-btn" data-tv="dodaj" data-id="' + s.id + '">+ do listy życzeń</button>';
+        : gdzie === 'nowosci' ? '<span class="info-tag">w nowościach</span>'
+        : gdzie === 'odrzucone' ? '<span class="info-tag">odrzucone</span>'
+        : (tvEdycjaId === s.id
+            ? '<input class="tytul-edycja" id="edycja-tytul-tv" value="' + escapeHtml(doFormatuBazy(s.name).tytul) + '" aria-label="tytuł na liście">' +
+              '<button class="add-btn" data-tv="potwierdz" data-id="' + s.id + '">dodaj</button>' +
+              '<button class="reject-btn" data-tv="anuluj" data-id="' + s.id + '">anuluj</button>'
+            : '<button class="reject-btn" data-tv="pomin" data-id="' + s.id + '">pomiń</button>' +
+              '<button class="add-btn" data-tv="dodaj" data-id="' + s.id + '">+ do listy życzeń</button>');
       return '<div class="list-item">' +
         '<div class="list-date">' + escapeHtml(tvRok(s) || '') + '</div>' +
         '<div class="list-main"><h4><a href="' + escapeHtml(s.url || '#') + '" target="_blank" rel="noopener">' + escapeHtml(s.name) + '</a></h4>' +
@@ -1125,12 +1207,32 @@
           (skrot ? '<p class="desc">' + escapeHtml(skrot) + '</p>' : '') + '</div>' +
         '<div class="btn-row">' + przyciski + '</div></div>';
     }).join('');
+    const pole = document.getElementById('edycja-tytul-tv');
+    if(pole){ pole.focus(); pole.select(); }
   }
 
-  async function dodajZTv(id){
+  async function pominTv(id){
+    const s = tvPozycje.find(x => x.id === id);
+    tvPominiete.add(id);
+    renderujTv();
+    if(!s || !s.url) return;
+    try{
+      await grist.docApi.applyUserActions([['AddRecord', 'Odrzucone', null, { link: s.url }]]);
+    } catch(e){
+      try{     // tabeli Odrzucone jeszcze nie ma - zakładamy ją
+        await grist.docApi.applyUserActions([
+          ['AddTable', 'Odrzucone', [{ id: 'link', type: 'Text' }]],
+          ['AddRecord', 'Odrzucone', null, { link: s.url }],
+        ]);
+      } catch(e2){ return; }
+    }
+    odrzuconeTvIds.add(id);
+  }
+
+  async function dodajZTv(id, tytulReczny){
     const s = tvPozycje.find(x => x.id === id);
     if(!s) return;
-    const f = doFormatuBazy(s.name);
+    const f = doFormatuBazy((tytulReczny || '').trim() || s.name);
     const pola = { tytul: f.tytul, link_epguides: s.url || '' };
     const rok = tvRok(s);
     if(rok) pola.rok = rok;
@@ -1149,13 +1251,33 @@
       }
     } catch(e){ /* listę sezonów można uzupełnić później */ }
     try{
-      await grist.docApi.applyUserActions([['AddRecord', 'ListaZyczen', null, pola]]);
+      // plakat z TVmaze: przy pierwszym dodaniu zakładamy kolumnę plakat_url w Liście życzeń
+      const obraz = (s.image && s.image.medium) || '';
+      const akcje = [];
+      if(!zyczeniaMaTvmazeId) akcje.push(['AddColumn', 'ListaZyczen', 'tvmaze_id', { type: 'Int', label: 'tvmaze id' }]);
+      pola.tvmaze_id = id;
+      if(obraz){
+        if(!zyczeniaMaPlakatUrl) akcje.push(['AddColumn', 'ListaZyczen', 'plakat_url', { type: 'Text', label: 'plakat URL' }]);
+        pola.plakat_url = obraz;
+      }
+      akcje.push(['AddRecord', 'ListaZyczen', null, pola]);
+      try{
+        await grist.docApi.applyUserActions(akcje);
+        zyczeniaMaTvmazeId = true;
+        if(obraz) zyczeniaMaPlakatUrl = true;
+      } catch(e){
+        if(!obraz) throw e;
+        delete pola.plakat_url;          // bez plakatu też się uda
+        if(!zyczeniaMaTvmazeId) delete pola.tvmaze_id;
+        await grist.docApi.applyUserActions([['AddRecord', 'ListaZyczen', null, pola]]);
+      }
       tvDodane.add(id);
+      tvEdycjaId = null;
       await wczytajDane();
       renderujTv();
-      pokazKomunikat('Dodano „' + f.tytul + '” do listy życzeń.');
+      pokazKomunikat('dodano „' + f.tytul + '” do listy życzeń');
     } catch(e){
-      pokazBlad('Nie udało się dodać: ' + e.message);
+      pokazBlad('nie udało się dodać: ' + e.message);
     }
   }
 
@@ -1178,12 +1300,20 @@
     if(fraza) szukajTv(fraza); else zaladujPartie();
   });
   document.getElementById('tylko-fabularne').addEventListener('change', () => { if(tvTryb === 'partie') zaladujPartie(); });
+  document.addEventListener('keydown', ev => {
+    if(ev.key === 'Enter' && ev.target && ev.target.id === 'edycja-tytul-tv' && tvEdycjaId !== null){
+      ev.preventDefault();
+      dodajZTv(tvEdycjaId, ev.target.value);
+    }
+  });
   document.getElementById('lista-tv').addEventListener('click', ev => {
     const b = ev.target.closest('button[data-tv]');
     if(!b) return;
     const id = Number(b.dataset.id);
-    if(b.dataset.tv === 'pomin'){ tvPominiete.add(id); renderujTv(); }
-    else if(b.dataset.tv === 'dodaj'){ b.disabled = true; dodajZTv(id); }
+    if(b.dataset.tv === 'pomin'){ pominTv(id); }
+    else if(b.dataset.tv === 'dodaj'){ tvEdycjaId = id; renderujTv(); }
+    else if(b.dataset.tv === 'anuluj'){ tvEdycjaId = null; renderujTv(); }
+    else if(b.dataset.tv === 'potwierdz'){ const p = document.getElementById('edycja-tytul-tv'); b.disabled = true; dodajZTv(id, p ? p.value : ''); }
   });
 
   renderujNav();
