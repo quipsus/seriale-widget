@@ -8,35 +8,83 @@
 <title>Archiwum — widget</title>
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 <style>
-  :root{
-    color-scheme: light;
-    --s-bg: #F4F7F8;
-    --s-bg-alt: #E8EEF2;
-    --s-ink: #154565;
-    --s-ink-soft: #526A7A;
-    --s-sea: #4FA3DA;
-    --s-mint: #5EBAA3;
-    --s-mint-bg: #E7F3F0;
-    --s-mint-ink: #2E6E5D;
-    --s-warn: #CB704D;
-    --s-line: #BFCFD9;
-    --s-violet: #8C7CC0;
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+:root{ color-scheme: light; }
 *{ box-sizing: border-box; }
-
 html{ background: #F4F7F8; color-scheme: light; }
 
 body{
 margin:0;
 background: #F4F7F8;
 color: #154565;
-font-family: Calibri, ‘Segoe UI’, Helvetica, Arial, sans-serif;
+font-family: ‘Inter’, Calibri, ‘Segoe UI’, Helvetica, Arial, sans-serif;
 line-height: 1.5;
 font-weight: 400;
 font-size: 14px;
 }
 
+/* ––––– nagłówek: tytuł, dyski, zakładki ––––– */
+header{
+padding: 16px 20px 14px;
+border-bottom: 2px solid #154565;
+display:flex; flex-direction:column; gap: 10px;
+}
+.header-row{
+display:flex; justify-content: space-between; align-items: flex-start;
+flex-wrap: wrap; gap: 16px 24px;
+}
+h1{
+font-weight: 800; font-size: 1.9rem; margin: 0;
+letter-spacing: -0.5px; color: #154565; line-height: 1.15;
+}
+nav{ display:flex; gap: 4px; flex-wrap: wrap; }
+nav a{
+font-weight: 600; font-size: 0.88rem;
+border: 2px solid #154565; color: #154565; background: none;
+padding: 8px 16px; cursor: pointer; border-radius: 8px;
+text-decoration: none; display:inline-block;
+}
+nav a.active{ background: #154565; color: #F4F7F8; }
+nav a:not(.active):hover{ background: #E8EEF2; }
+
+.disk-strip-bar{ display:flex; gap: 22px; flex-wrap: wrap; align-items:flex-start; }
+.disk-gauge{
+display:flex; flex-direction:column; gap: 4px;
+cursor: pointer; position: relative; min-width: 120px;
+}
+.disk-gauge-label{
+font-size: 0.72rem; font-weight: 700; color: #154565;
+display:flex; justify-content:space-between; align-items:baseline;
+}
+.disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
+.filmstrip{
+display:flex; align-items:center; gap: 2px;
+background: #154565; padding: 4px 5px; border-radius: 4px; position: relative;
+}
+.filmstrip::before, .filmstrip::after{
+content:””; position:absolute; left:5px; right:5px; height:3px;
+background-image: radial-gradient(circle, #E8EEF2 1.2px, transparent 1.4px);
+background-size: 8px 3px; background-repeat: repeat-x;
+}
+.filmstrip::before{ top: 1px; }
+.filmstrip::after{ bottom: 1px; }
+.filmstrip-frame{ flex: 1; height: 14px; background: #3A5464; border-radius: 1px; }
+.filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
+.filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
+.filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
+.disk-gauge-detail{
+display:none; position:absolute; top: calc(100% + 8px); left: 0;
+background: #154565; color: #F4F7F8;
+font-size: 0.74rem; white-space: nowrap; padding: 6px 10px; border-radius: 6px; z-index: 5;
+}
+.disk-gauge-detail::after{
+content:””; position:absolute; bottom:100%; left: 18px;
+border: 5px solid transparent; border-bottom-color: #154565;
+}
+.disk-gauge.open .disk-gauge-detail{ display:block; }
+
+/* ––––– lista ––––– */
 .wrap{ padding: 16px 20px 60px; max-width: 1100px; margin: 0 auto; }
 
 .toolbar{
@@ -44,19 +92,23 @@ display:flex; justify-content: space-between; align-items: center;
 margin-bottom: 12px; flex-wrap: wrap; gap: 12px;
 }
 .toolbar input[type=text]{
-font-family: inherit;
-font-size: 0.95rem;
-padding: 9px 12px;
-border: none; border-bottom: 2px solid #154565;
+font-family: inherit; font-size: 0.95rem; padding: 9px 12px;
+border: none; border-bottom: 2px solid #154565; border-radius: 8px 8px 0 0;
 background: transparent; width: 260px; color: #154565;
 }
 .toolbar input[type=text]:focus{ outline:none; border-bottom-color: #4FA3DA; }
 .count{ font-size: 0.8rem; color: #526A7A; }
 
-.pager{
-display:flex; justify-content:center; align-items:center; gap: 12px;
-margin: 8px 0 12px;
+.chips{ display:flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.chip{
+font-family: inherit; font-weight: 600; font-size: 0.82rem;
+background: none; border: 2px solid #4FA3DA; color: #2C7DB3;
+padding: 7px 14px; cursor: pointer; border-radius: 8px;
 }
+.chip.active{ background: #4FA3DA; color: #F4F7F8; }
+.chip:not(.active):hover{ background: #E8EEF2; }
+
+.pager{ display:flex; justify-content:center; align-items:center; gap: 12px; margin: 8px 0 12px; }
 .pager button{
 font-family: inherit; font-weight: 600; font-size: 0.85rem;
 border: 2px solid #154565; background: #F4F7F8; color: #154565;
@@ -69,31 +121,22 @@ padding: 8px 16px; cursor: pointer; border-radius: 8px;
 .cards{ display:flex; flex-direction:column; gap: 8px; }
 
 .card{
-display: grid;
-grid-template-columns: 76px 1fr 200px;
-gap: 20px;
-padding: 16px;
-align-items: start;
-position: relative;
-color: #154565;
+display: grid; grid-template-columns: 76px 1fr 200px; gap: 20px;
+padding: 16px; align-items: start; position: relative; color: #154565;
 }
 .card:not(:first-child)::before{
-content:””;
-position: absolute;
-top: -4px; left: 16px; right: 16px;
-height: 1px;
-background: #BFCFD9;
+content:””; position: absolute; top: -4px; left: 16px; right: 16px;
+height: 1px; background: #BFCFD9;
 }
 .card:hover{ background: #E8EEF2; border-radius: 10px; }
 .card:hover::before, .card:hover + .card::before{ display:none; }
 
 .poster{
-width: 76px; height: 106px;
+width: 76px; height: 106px; border-radius: 8px;
 background-color: #154565;
 background-image: linear-gradient(150deg, #4FA3DA, #154565);
 display:flex; align-items:center; justify-content:center;
-color: #F4F7F8; font-weight: 800; font-size: 1.5rem;
-flex-shrink:0;
+color: #F4F7F8; font-weight: 800; font-size: 1.5rem; flex-shrink:0;
 }
 
 .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
@@ -103,16 +146,10 @@ flex-shrink:0;
 .card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
 
 .tag{
-font-size: 0.72rem; font-weight: 600;
-padding: 6px 9px;
-border: 1px solid #154565;
-border-radius: 8px;
-width: 100%;
-text-align: center;
-box-sizing: border-box;
-cursor: pointer;
-background: none;
-font-family: inherit;
+font-size: 0.72rem; font-weight: 600; padding: 6px 9px;
+border: 1px solid #154565; border-radius: 8px; width: 100%;
+text-align: center; box-sizing: border-box; cursor: pointer;
+background: none; font-family: inherit;
 }
 .tag.oczekiwany{ border-color: #8C7CC0; color: #564785; background: #EDEAF5; }
 .tag.emitowany{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
@@ -122,10 +159,8 @@ font-family: inherit;
 .tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
 
 .location-btn{
-font-weight: 600; font-size: 0.72rem;
-border: 1px solid #154565; border-radius: 8px;
-padding: 6px 9px; width: 100%; box-sizing: border-box;
-text-align: center;
+font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
+padding: 6px 9px; width: 100%; box-sizing: border-box; text-align: center;
 color: #154565; background: #F4F7F8;
 }
 
@@ -134,25 +169,28 @@ color: #154565; background: #F4F7F8;
 
 details summary{ cursor:pointer; font-size: 0.8rem; color: #2C7DB3; margin-top: 8px; font-weight: 600; }
 .history-block{
-font-size: 0.85rem;
-background: #E8EEF2;
-border: 1px solid #BFCFD9;
-color: #154565;
-padding: 12px 16px;
-margin-top: 8px;
-white-space: pre-line;
-line-height: 1.9;
+font-size: 0.85rem; background: #E8EEF2; border: 1px solid #BFCFD9; color: #154565;
+padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; border-radius: 8px;
 }
 </style>
 
 </head>
 <body>
 
+<header>
+  <div class="header-row">
+    <h1>archiwum</h1>
+    <div class="disk-strip-bar" id="dyski"></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
 <div class="wrap">
   <div class="toolbar">
     <input type="text" id="szukaj" placeholder="szukaj tytułu…">
     <div class="count" id="licznik"></div>
   </div>
+  <div class="chips" id="chips"></div>
   <div class="pager" id="pager-gora"></div>
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
@@ -167,9 +205,23 @@ line-height: 1.9;
   // Klik w tag przełącza kompletny <-> niekompletny.
   const KOLEJNOSC_STATUSOW = ['kompletny', 'niekompletny'];
 
+  // Zakładki w nagłówku: [nazwa, numer strony w Griście]. Klik przenosi na tę stronę.
+  const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
+  const ZAKLADKI = [['seriale', 2], ['archiwum', 5], ['nowości', 3], ['lista życzeń', 4]];
+  const AKTYWNA_ZAKLADKA = 'archiwum';
+
   const NA_STRONE = 25;
+  const LICZBA_KLATEK = 6;
   let wszystkieRekordy = [];
+  let dyskiDane = [];
   let strona = 1;
+  let filtrStatusu = 'wszystkie';
+
+  function escapeHtml(tekst){
+    const div = document.createElement('div');
+    div.textContent = tekst == null ? '' : String(tekst);
+    return div.innerHTML;
+  }
 
   function pokazBlad(tresc){
     document.getElementById('blad').innerHTML = '<div class="error">' + escapeHtml(tresc) + '</div>';
@@ -179,10 +231,75 @@ line-height: 1.9;
     return (tytul || '?').trim().charAt(0).toUpperCase();
   }
 
-  function escapeHtml(tekst){
-    const div = document.createElement('div');
-    div.textContent = tekst == null ? '' : String(tekst);
-    return div.innerHTML;
+  // Liczba różnych sezonów w zapisie historii ("[✓] S01: 24 odc." itd.).
+  function liczbaSezonow(historia){
+    if(!historia) return 0;
+    const numery = new Set();
+    const re = /S(\d{1,3}):/g;
+    let m;
+    while((m = re.exec(historia)) !== null) numery.add(Number(m[1]));
+    return numery.size;
+  }
+
+  function odmianaSezonow(n){
+    if(n === 1) return '1 sezon';
+    const d = n % 10, dd = n % 100;
+    if(d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14)) return n + ' sezony';
+    return n + ' sezonów';
+  }
+
+  function fmtGb(gb){
+    gb = Number(gb) || 0;
+    return gb >= 1000 ? (gb / 1000).toFixed(1).replace('.', ',') + ' TB' : Math.round(gb) + ' GB';
+  }
+
+  function renderujNav(){
+    document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
+      '<a href="' + ADRES_STRON + z[1] + '" target="_top"' +
+      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) + '</a>'
+    ).join('');
+  }
+
+  function renderujDyski(){
+    const nazwy = ['dysk_0', 'dysk_1', 'dysk_2'];
+    const html = nazwy.map((nazwa, indeks) => {
+      const wiersz = dyskiDane.find(d => d.dysk === nazwa) || {};
+      const pojemnosc = Number(wiersz.pojemnosc_gb) || 0;
+      const wolne = Number(wiersz.wolne_gb) || 0;
+      const wSerialach = wszystkieRekordy
+        .filter(r => r.dysk === nazwa)
+        .reduce((suma, r) => suma + (Number(r.rozmiar_gb) || 0), 0);
+
+      let procent = null, opis;
+      if(pojemnosc > 0){
+        procent = Math.max(0, Math.min(100, Math.round((pojemnosc - wolne) / pojemnosc * 100)));
+        opis = fmtGb(pojemnosc - wolne) + ' / ' + fmtGb(pojemnosc) + ' · ' + fmtGb(wolne) + ' wolne';
+      } else {
+        opis = 'brak danych o pojemności · seriale: ' + fmtGb(wSerialach);
+      }
+      const wypelnione = procent === null ? 0 : Math.round(procent / 100 * LICZBA_KLATEK);
+      let klatki = '';
+      for(let i = 0; i < LICZBA_KLATEK; i++){
+        klatki += '<div class="filmstrip-frame' + (i < wypelnione ? ' filled dysk' + indeks : '') + '"></div>';
+      }
+      return '<div class="disk-gauge">' +
+        '<div class="disk-gauge-label">' + nazwa + ' <span>' + (procent === null ? '—' : procent + '%') + '</span></div>' +
+        '<div class="filmstrip">' + klatki + '</div>' +
+        '<div class="disk-gauge-detail">' + escapeHtml(opis) + '</div>' +
+      '</div>';
+    }).join('');
+    document.getElementById('dyski').innerHTML = html;
+  }
+
+  function renderujChipy(policzone){
+    const etykiety = ['wszystkie'].concat(STATUSY_W_WIDOKU);
+    document.getElementById('chips').innerHTML = etykiety.map(s => {
+      const ile = s === 'wszystkie'
+        ? STATUSY_W_WIDOKU.reduce((suma, st) => suma + (policzone[st] || 0), 0)
+        : (policzone[s] || 0);
+      return '<button class="chip' + (s === filtrStatusu ? ' active' : '') +
+        '" data-status="' + escapeHtml(s) + '">' + escapeHtml(s) + ' (' + ile + ')</button>';
+    }).join('');
   }
 
   function renderujPager(liczbaStron){
@@ -200,9 +317,16 @@ line-height: 1.9;
     const pusto = document.getElementById('pusto');
     lista.innerHTML = '';
 
-    const pasujace = wszystkieRekordy
+    const wWidoku = wszystkieRekordy
       .filter(r => STATUSY_W_WIDOKU.includes(r.status))
-      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
+      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza));
+
+    const policzone = {};
+    wWidoku.forEach(r => { policzone[r.status] = (policzone[r.status] || 0) + 1; });
+    renderujChipy(policzone);
+
+    const pasujace = wWidoku
+      .filter(r => filtrStatusu === 'wszystkie' || r.status === filtrStatusu)
       .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
 
     const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
@@ -228,7 +352,9 @@ line-height: 1.9;
       const karta = document.createElement('div');
       karta.className = 'card';
 
+      const sezony = liczbaSezonow(r.historia_sezonow);
       const metaCzesci = [r.rok, r.kraj].filter(Boolean);
+      if(sezony > 0) metaCzesci.push(odmianaSezonow(sezony));
       const historiaHtml = r.historia_sezonow
         ? '<details><summary>historia sezonów</summary><div class="history-block">' + escapeHtml(r.historia_sezonow) + '</div></details>'
         : '';
@@ -273,6 +399,22 @@ line-height: 1.9;
     }
   }
 
+  async function wczytajDyski(){
+    try{
+      const t = await grist.docApi.fetchTable('Dyski');
+      dyskiDane = [];
+      for(let i = 0; i < t.id.length; i++){
+        dyskiDane.push({
+          dysk: t.dysk ? t.dysk[i] : '',
+          pojemnosc_gb: t.pojemnosc_gb ? t.pojemnosc_gb[i] : 0,
+          wolne_gb: t.wolne_gb ? t.wolne_gb[i] : 0,
+        });
+      }
+    } catch(e){
+      dyskiDane = [];   // brak tabeli Dyski nie powinien blokować reszty widoku
+    }
+  }
+
   async function wczytajDane(){
     try{
       const tabela = await grist.docApi.fetchTable('Seriale');
@@ -291,22 +433,36 @@ line-height: 1.9;
           historia_sezonow: tabela.historia_sezonow ? tabela.historia_sezonow[i] : '',
         });
       }
+      await wczytajDyski();
+      renderujDyski();
       renderuj();
     } catch(e){
       pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
     }
   }
 
-  // Jedna obsługa kliknięć dla całej strony (zamiast osobnych na każdej karcie).
+  // Jedna obsługa kliknięć dla całej strony.
   document.addEventListener('click', (ev) => {
     const tag = ev.target.closest('.tag[data-id]');
     if(tag){ onKlikStatus(tag); return; }
+
+    const chip = ev.target.closest('.chip[data-status]');
+    if(chip){ filtrStatusu = chip.dataset.status; strona = 1; renderuj(); return; }
+
     const pagerBtn = ev.target.closest('.pager button[data-akcja]');
-    if(pagerBtn && !pagerBtn.disabled){
-      strona += (pagerBtn.dataset.akcja === 'dalej') ? 1 : -1;
-      renderuj();
-      window.scrollTo(0, 0);
+    if(pagerBtn){
+      if(!pagerBtn.disabled){
+        strona += (pagerBtn.dataset.akcja === 'dalej') ? 1 : -1;
+        renderuj();
+        window.scrollTo(0, 0);
+      }
+      return;
     }
+
+    const dysk = ev.target.closest('.disk-gauge');
+    const bylOtwarty = dysk && dysk.classList.contains('open');
+    document.querySelectorAll('.disk-gauge.open').forEach(g => g.classList.remove('open'));
+    if(dysk && !bylOtwarty) dysk.classList.add('open');
   });
 
   document.getElementById('szukaj').addEventListener('input', () => {
@@ -314,6 +470,8 @@ line-height: 1.9;
     renderuj();
   });
 
+  renderujNav();
+  renderujDyski();
   grist.ready({ requiredAccess: 'full' });
   grist.onRecords(wczytajDane);
   wczytajDane();
