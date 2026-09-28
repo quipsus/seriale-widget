@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Lista życzeń — widget</title>
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{ color-scheme: light; }
+*{ box-sizing: border-box; }
+html{ background: #F4F7F8; color-scheme: light; }
+
+body{
+margin:0;
+background: #F4F7F8;
+color: #154565;
+font-family: ‘Inter’, Calibri, ‘Segoe UI’, Helvetica, Arial, sans-serif;
+line-height: 1.5;
+font-weight: 400;
+font-size: 14px;
+}
+
+/* ––––– nagłówek: tytuł, dyski, zakładki ––––– */
+header{
+padding: 16px 20px 14px;
+border-bottom: 2px solid #154565;
+display:flex; flex-direction:column; gap: 10px;
+}
+.header-row{
+display:flex; justify-content: space-between; align-items: flex-start;
+flex-wrap: wrap; gap: 16px 24px;
+}
+h1{
+font-weight: 800; font-size: 1.9rem; margin: 0;
+letter-spacing: -0.5px; color: #154565; line-height: 1.15;
+}
+nav{ display:flex; gap: 4px; flex-wrap: wrap; }
+nav a{
+font-weight: 600; font-size: 0.88rem;
+border: 2px solid #154565; color: #154565; background: none;
+padding: 8px 16px; cursor: pointer; border-radius: 8px;
+text-decoration: none; display:inline-block;
+}
+nav a.active{ background: #154565; color: #F4F7F8; }
+nav a:not(.active):hover{ background: #E8EEF2; }
+
+.disk-strip-bar{ display:flex; gap: 22px; flex-wrap: wrap; align-items:flex-start; }
+.disk-gauge{
+display:flex; flex-direction:column; gap: 4px;
+cursor: pointer; position: relative; min-width: 120px;
+}
+.disk-gauge-label{
+font-size: 0.72rem; font-weight: 700; color: #154565;
+display:flex; justify-content:space-between; align-items:baseline;
+}
+.disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
+.filmstrip{
+display:flex; align-items:center; gap: 2px;
+background: #FFFFFF; border: 1px solid #BFCFD9; padding: 4px 5px; border-radius: 4px; position: relative;
+}
+.filmstrip::before, .filmstrip::after{
+content:””; position:absolute; left:5px; right:5px; height:3px;
+background-image: radial-gradient(circle, #BFCFD9 1.2px, transparent 1.4px);
+background-size: 8px 3px; background-repeat: repeat-x;
+}
+.filmstrip::before{ top: 1px; }
+.filmstrip::after{ bottom: 1px; }
+.filmstrip-frame{ flex: 1; height: 14px; background: #E8EEF2; border-radius: 1px; }
+.filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
+.filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
+.filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
+.disk-gauge-detail{
+display:none; position:absolute; top: calc(100% + 8px); left: 0;
+background: #154565; color: #F4F7F8;
+font-size: 0.74rem; white-space: nowrap; padding: 6px 10px; border-radius: 6px; z-index: 5;
+}
+.disk-gauge-detail::after{
+content:””; position:absolute; bottom:100%; left: 18px;
+border: 5px solid transparent; border-bottom-color: #154565;
+}
+.disk-gauge.open .disk-gauge-detail{ display:block; }
+
+/* ––––– lista ––––– */
+.wrap{ padding: 16px 20px 60px; max-width: 1100px; margin: 0 auto; }
+
+.toolbar{
+display:flex; justify-content: space-between; align-items: center;
+margin-bottom: 12px; flex-wrap: wrap; gap: 12px;
+}
+.toolbar input[type=text]{
+font-family: inherit; font-size: 0.95rem; padding: 9px 12px;
+border: none; border-bottom: 2px solid #154565; border-radius: 8px 8px 0 0;
+background: transparent; width: 260px; color: #154565;
+}
+.toolbar input[type=text]:focus{ outline:none; border-bottom-color: #4FA3DA; }
+.count{ font-size: 0.8rem; color: #526A7A; }
+
+.filtry{ display:flex; justify-content: space-between; align-items:center; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.filtry-dol{ margin: 16px 0 0; justify-content: flex-end; }
+.chips{ display:flex; gap: 6px; flex-wrap: wrap; }
+.chip{
+font-family: inherit; font-weight: 600; font-size: 0.82rem;
+background: none; border: 2px solid #4FA3DA; color: #2C7DB3;
+padding: 7px 14px; cursor: pointer; border-radius: 8px;
+}
+.chip.active{ background: #4FA3DA; color: #F4F7F8; }
+.chip:not(.active):hover{ background: #E8EEF2; }
+
+.pager{ display:flex; align-items:center; gap: 8px; margin-left: auto; }
+.pager button{
+font-family: inherit; font-weight: 700; font-size: 1.3rem; line-height: 1;
+border: 2px solid #154565; background: #F4F7F8; color: #154565;
+width: 40px; height: 36px; padding: 0 0 3px; cursor: pointer; border-radius: 8px;
+}
+.pager button:hover:not(:disabled){ background: #154565; color: #F4F7F8; }
+.pager button:disabled{ opacity: 0.35; cursor: default; }
+.pager .info{ font-size: 0.85rem; color: #526A7A; min-width: 56px; text-align:center; }
+
+.cards{ display:flex; flex-direction:column; gap: 8px; }
+
+.card{
+display: grid; grid-template-columns: 76px 1fr 200px; gap: 20px;
+padding: 16px; align-items: start; position: relative; color: #154565;
+}
+.card:not(:first-child)::before{
+content:””; position: absolute; top: -4px; left: 16px; right: 16px;
+height: 1px; background: #BFCFD9;
+}
+.card:hover{ background: #E8EEF2; border-radius: 10px; }
+.card:hover::before, .card:hover + .card::before{ display:none; }
+
+.poster{
+width: 76px; height: 106px; border-radius: 8px;
+background-color: #154565;
+background-image: linear-gradient(150deg, #4FA3DA, #154565);
+display:flex; align-items:center; justify-content:center;
+color: #F4F7F8; font-weight: 800; font-size: 1.5rem; flex-shrink:0;
+}
+
+.card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
+.meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
+.desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+
+.card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
+
+.tag{
+font-size: 0.72rem; font-weight: 600; padding: 6px 9px;
+border: 1px solid #154565; border-radius: 8px; width: 100%;
+text-align: center; box-sizing: border-box; cursor: pointer;
+background: none; font-family: inherit;
+}
+.tag.oczekiwany{ border-color: #8C7CC0; color: #564785; background: #EDEAF5; }
+.tag.emitowany{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
+.tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
+.tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
+.tag:hover{ filter: brightness(0.95); }
+.tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
+
+.location-btn{
+font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
+padding: 6px 9px; width: 100%; box-sizing: border-box; text-align: center;
+color: #154565; background: #F4F7F8;
+}
+
+.empty{ text-align:center; color: #526A7A; padding: 40px 0; font-size: 0.9rem; }
+.error{ background: #FBEEE8; border: 1px solid #CB704D; color: #B25A38; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
+
+.zyczenie{ position:relative; padding:16px; color:#154565; }
+.zyczenie:not(:first-child)::before{
+content:””; position:absolute; top:-4px; left:16px; right:16px; height:1px; background:#BFCFD9;
+}
+.zyczenie:hover{ background:#E8EEF2; border-radius:10px; }
+.zyczenie:hover::before, .zyczenie:hover + .zyczenie::before{ display:none; }
+.zyczenie-top{ display:grid; grid-template-columns: 76px 1fr 200px; gap:20px; align-items:start; }
+.suma{ font-size:0.8rem; color:#526A7A; }
+.brak-sezonow{ font-size:0.8rem; color:#526A7A; margin-top:10px; }
+
+.season-row{
+display:grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+gap:5px; margin:12px 0 4px;
+}
+.season-chip{
+font-family:inherit; font-size:0.74rem; font-weight:600;
+border:1px solid #BFCFD9; padding:5px 4px; cursor:pointer; color:#526A7A;
+text-align:center; border-radius:8px; background:none;
+}
+.season-chip.done{ border-color:#5EBAA3; color:#2E6E5D; background:#E7F3F0; }
+.season-chip.partial{ border-color:#4FA3DA; color:#2C7DB3; background:#E5EFF5; }
+.season-chip.selected{ outline:2px solid #154565; outline-offset:1px; }
+.season-chip.nieznany{ opacity:0.5; cursor:default; }
+
+.ep-progress{ font-size:0.76rem; color:#526A7A; margin:6px 0 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.mini-btn{
+font-family:inherit; font-size:0.72rem; font-weight:600; background:none;
+border:1px solid #154565; color:#154565; padding:4px 10px; cursor:pointer; border-radius:8px;
+}
+.mini-btn:hover{ background:#154565; color:#F4F7F8; }
+.ep-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap:6px; margin:8px 0 4px; }
+.ep-pixel{
+font-family:inherit; height:28px; background:#E8EEF2; border:1px solid #BFCFD9; cursor:pointer;
+display:flex; align-items:center; justify-content:center;
+font-size:0.68rem; font-weight:600; color:#526A7A; border-radius:8px; padding:0;
+}
+.ep-pixel.done{ background:#5EBAA3; border-color:#5EBAA3; color:#2E6E5D; }
+.add-btn{
+font-family:inherit; font-weight:700; font-size:0.78rem;
+background:#4FA3DA; color:#F4F7F8; border:none; padding:9px 14px; cursor:pointer; border-radius:8px;
+}
+.add-btn:hover{ background:#154565; }
+.add-btn.confirm{ background:#CB704D; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <h1>lista życzeń</h1>
+    <div class="disk-strip-bar" id="dyski"></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<div class="wrap">
+  <div class="toolbar">
+    <input type="text" id="szukaj" placeholder="szukaj tytułu…">
+    <div class="count" id="licznik"></div>
+  </div>
+  <div class="komunikat" id="komunikat"></div>
+  <div class="filtry" id="filtry"><div class="pager" id="pager-gora"></div></div>
+  <div id="blad"></div>
+  <div class="cards" id="lista"></div>
+  <div class="empty" id="pusto" style="display:none;">Lista życzeń jest pusta.</div>
+  <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
+</div>
+
+<script>
+  const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
+  const ZAKLADKI = [['seriale', 2], ['archiwum', 5], ['nowości', 3], ['lista życzeń', 4]];
+  const AKTYWNA_ZAKLADKA = 'lista życzeń';
+  const LICZBA_KLATEK = 6;
+  const NA_STRONE = 25;
+
+  let wszystkieRekordy = [];   // tabela Seriale (do wskaźników dysków i sprawdzania duplikatów)
+  let dyskiDane = [];
+  let strona = 1;
+  let naglowekWczytany = false;
+
+  function pad2(n){ return String(n).padStart(2, '0'); }
+
+  let komunikatTimer = null;
+  function pokazKomunikat(tekst){
+    const el = document.getElementById('komunikat');
+    el.textContent = tekst;
+    el.style.display = tekst ? 'block' : 'none';
+    clearTimeout(komunikatTimer);
+    if(tekst) komunikatTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
+  }
+
+  // Przenosi rodzajnik na koniec ("The Wire" -> "Wire, The") i wycina rok w nawiasie,
+  // żeby tytuł pasował do formatu używanego w tabeli Seriale.
+  function doFormatuBazy(tytul){
+    let t = (tytul || '').trim();
+    let rok = null;
+    const m = /^(.*?)\s*\((\d{4})\)\s*$/.exec(t);
+    if(m && m[1].trim()){ t = m[1].trim(); rok = Number(m[2]); }
+    const a = /^(The|A|An)\s+(.+)$/i.exec(t);
+    if(a){
+      const art = a[1].charAt(0).toUpperCase() + a[1].slice(1).toLowerCase();
+      t = a[2].trim() + ', ' + art;
+    }
+    return { tytul: t, rokZNazwy: rok };
+  }
+
+  function znajdzWSerialach(tytul, rok){
+    const f = doFormatuBazy(tytul);
+    const r = rok || f.rokZNazwy;
+    const t = f.tytul.toLowerCase();
+    return wszystkieRekordy.find(x =>
+      (x.tytul || '').toLowerCase() === t && (!r || !x.rok || Number(x.rok) === Number(r)));
+  }
+
+  async function wczytajSeriale(){
+    const tabela = await grist.docApi.fetchTable('Seriale');
+    wszystkieRekordy = [];
+    for(let i = 0; i < tabela.id.length; i++){
+      wszystkieRekordy.push({
+        id: tabela.id[i],
+        tytul: tabela.tytul ? tabela.tytul[i] : '',
+        rok: tabela.rok ? tabela.rok[i] : '',
+        dysk: tabela.dysk ? tabela.dysk[i] : '',
+        rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
+      });
+    }
+  }
+
+  async function wczytajNaglowek(){
+    if(naglowekWczytany) return;
+    try{ await wczytajSeriale(); } catch(e){ wszystkieRekordy = []; }
+    await wczytajDyski();
+    renderujDyski();
+    naglowekWczytany = true;
+  }
+
+  function polaKarty(r){
+    // Pola przenoszone do tabeli Seriale; plakat tylko jeśli istnieje.
+    const pola = { tytul: r.tytul, link_epguides: r.link_epguides || '', kraj: r.kraj || '', opis: r.opis || '' };
+    if(r.rok) pola.rok = r.rok;
+    if(Array.isArray(r.plakat)) pola.plakat = r.plakat;
+    return pola;
+  }
+
+  function escapeHtml(tekst){
+    const div = document.createElement('div');
+    div.textContent = tekst == null ? '' : String(tekst);
+    return div.innerHTML;
+  }
+
+  function pokazBlad(tresc){
+    document.getElementById('blad').innerHTML = '<div class="error">' + escapeHtml(tresc) + '</div>';
+  }
+
+  function inicjalTytulu(tytul){
+    return (tytul || '?').trim().charAt(0).toUpperCase();
+  }
+
+  // Liczba różnych sezonów w zapisie historii ("[✓] S01: 24 odc." itd.).
+  function liczbaSezonow(historia){
+    if(!historia) return 0;
+    const numery = new Set();
+    const re = /S(\d{1,3}):/g;
+    let m;
+    while((m = re.exec(historia)) !== null) numery.add(Number(m[1]));
+    return numery.size;
+  }
+
+  function odmianaSezonow(n){
+    if(n === 1) return '1 sezon';
+    const d = n % 10, dd = n % 100;
+    if(d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14)) return n + ' sezony';
+    return n + ' sezonów';
+  }
+
+  function fmtGb(gb){
+    gb = Number(gb) || 0;
+    return gb >= 1000 ? (gb / 1000).toFixed(1).replace('.', ',') + ' TB' : Math.round(gb) + ' GB';
+  }
+
+  function renderujNav(){
+    document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
+      '<a href="' + ADRES_STRON + z[1] + '" target="_top"' +
+      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) + '</a>'
+    ).join('');
+  }
+
+  function renderujDyski(){
+    const nazwy = ['dysk_0', 'dysk_1', 'dysk_2'];
+    const html = nazwy.map((nazwa, indeks) => {
+      const wiersz = dyskiDane.find(d => d.dysk === nazwa) || {};
+      const pojemnosc = Number(wiersz.pojemnosc_gb) || 0;
+      const wolne = Number(wiersz.wolne_gb) || 0;
+      const wSerialach = wszystkieRekordy
+        .filter(r => r.dysk === nazwa)
+        .reduce((suma, r) => suma + (Number(r.rozmiar_gb) || 0), 0);
+
+      let procent = null, opis;
+      if(pojemnosc > 0){
+        procent = Math.max(0, Math.min(100, Math.round((pojemnosc - wolne) / pojemnosc * 100)));
+        opis = fmtGb(pojemnosc - wolne) + ' / ' + fmtGb(pojemnosc) + ' · ' + fmtGb(wolne) + ' wolne';
+      } else {
+        opis = 'brak danych o pojemności · seriale: ' + fmtGb(wSerialach);
+      }
+      const wypelnione = procent === null ? 0 : Math.round(procent / 100 * LICZBA_KLATEK);
+      let klatki = '';
+      for(let i = 0; i < LICZBA_KLATEK; i++){
+        klatki += '<div class="filmstrip-frame' + (i < wypelnione ? ' filled dysk' + indeks : '') + '"></div>';
+      }
+      return '<div class="disk-gauge">' +
+        '<div class="disk-gauge-label">' + nazwa + ' <span>' + (procent === null ? '—' : procent + '%') + '</span></div>' +
+        '<div class="filmstrip">' + klatki + '</div>' +
+        '<div class="disk-gauge-detail">' + escapeHtml(opis) + '</div>' +
+      '</div>';
+    }).join('');
+    document.getElementById('dyski').innerHTML = html;
+  }
+
+  async function wczytajDyski(){
+    try{
+      const t = await grist.docApi.fetchTable('Dyski');
+      dyskiDane = [];
+      for(let i = 0; i < t.id.length; i++){
+        dyskiDane.push({
+          dysk: t.dysk ? t.dysk[i] : '',
+          pojemnosc_gb: t.pojemnosc_gb ? t.pojemnosc_gb[i] : 0,
+          wolne_gb: t.wolne_gb ? t.wolne_gb[i] : 0,
+        });
+      }
+    } catch(e){
+      dyskiDane = [];   // brak tabeli Dyski nie powinien blokować reszty widoku
+    }
+  }
+
+  function renderujPager(liczbaStron){
+    const html = liczbaStron <= 1 ? '' :
+      '<button data-akcja="wstecz" aria-label="poprzednia strona"' + (strona <= 1 ? ' disabled' : '') + '>‹</button>' +
+      '<span class="info">' + strona + ' / ' + liczbaStron + '</span>' +
+      '<button data-akcja="dalej" aria-label="następna strona"' + (strona >= liczbaStron ? ' disabled' : '') + '>›</button>';
+    document.getElementById('pager-gora').innerHTML = html;
+    document.getElementById('pager-dol').innerHTML = html;
+    // widoki bez filtrów statusu: górny wiersz pokazujemy tylko wtedy, gdy są strzałki
+    const wiersz = document.getElementById('filtry');
+    if(wiersz && !document.getElementById('chips')) wiersz.style.display = html ? 'flex' : 'none';
+  }
+
+
+  let zyczenia = [];
+  let wybranySezon = {};       // id rekordu -> numer wybranego sezonu
+  let oczekujeArchiwum = null; // id rekordu, który czeka na potwierdzenie przeniesienia
+
+  // "[✓] S01: 24 odc." -> [{nr:1, razem:24}, ...]; "??" oznacza nieznaną liczbę odcinków (razem = 0)
+  function parsujSezony(historia){
+    const mapa = new Map();
+    (historia || '').split('\n').forEach(linia => {
+      const m = /S(\d{1,3}):\s*(\d+|\?\?)\s*odc/.exec(linia);
+      if(!m) return;
+      const nr = Number(m[1]);
+      const razem = m[2] === '??' ? 0 : Number(m[2]);
+      if(!mapa.has(nr) || (mapa.get(nr) === 0 && razem > 0)) mapa.set(nr, razem);
+    });
+    return Array.from(mapa.entries()).sort((a, b) => a[0] - b[0]).map(p => ({ nr: p[0], razem: p[1] }));
+  }
+
+  // "[~] S01: 03/43 odc. {01-03,05}" -> Map(nr -> Set(numerów odcinków))
+  function parsujPosiadane(tekst){
+    const wynik = new Map();
+    (tekst || '').split('\n').forEach(linia => {
+      const m = /S(\d{1,3}):\s*(\d+)\s*\/\s*(\d+|\?\?)/.exec(linia);
+      if(!m) return;
+      const nr = Number(m[1]);
+      const n = Number(m[2]);
+      const zbior = new Set();
+      const b = /\{([^}]*)\}/.exec(linia);
+      if(b){
+        b[1].split(',').forEach(cz => {
+          const p = cz.trim();
+          if(!p) return;
+          const r = /^(\d+)\s*-\s*(\d+)$/.exec(p);
+          if(r){ for(let e = Number(r[1]); e <= Number(r[2]) && e < 10000; e++) zbior.add(e); }
+          else if(/^\d+$/.test(p)) zbior.add(Number(p));
+        });
+      } else if(n > 0){
+        for(let e = 1; e <= n; e++) zbior.add(e);
+      }
+      wynik.set(nr, zbior);
+    });
+    return wynik;
+  }
+
+  function zakresy(zbior){
+    const a = Array.from(zbior).sort((x, y) => x - y);
+    const out = [];
+    let s = null, p = null;
+    const zamknij = () => { out.push(s === p ? pad2(s) : pad2(s) + '-' + pad2(p)); };
+    a.forEach(e => {
+      if(s === null){ s = p = e; }
+      else if(e === p + 1){ p = e; }
+      else { zamknij(); s = p = e; }
+    });
+    if(s !== null) zamknij();
+    return out.join(',');
+  }
+
+  function zapiszLinie(sezony, posiadane){
+    return sezony.map(s => {
+      const zbior = posiadane.get(s.nr) || new Set();
+      const trzymane = Array.from(zbior).filter(e => s.razem === 0 || e <= s.razem);
+      const n = trzymane.length;
+      const sym = n === 0 ? '[ ]' : (s.razem > 0 && n >= s.razem ? '[◇]' : '[~]');
+      const baza = sym + ' S' + pad2(s.nr) + ': ' + pad2(n) + '/' + (s.razem ? pad2(s.razem) : '??') + ' odc.';
+      return n > 0 ? baza + ' {' + zakresy(new Set(trzymane)) + '}' : baza;
+    }).join('\n');
+  }
+
+  function policzSezon(s, posiadane){
+    const zbior = posiadane.get(s.nr) || new Set();
+    return Array.from(zbior).filter(e => e >= 1 && (s.razem === 0 || e <= s.razem)).length;
+  }
+
+  function czyKompletne(sezony, posiadane){
+    return sezony.length > 0 && sezony.every(s => s.razem > 0 && policzSezon(s, posiadane) >= s.razem);
+  }
+
+  function domyslnySezon(sezony, posiadane){
+    const niepelny = sezony.find(s => s.razem > 0 && policzSezon(s, posiadane) < s.razem);
+    if(niepelny) return niepelny.nr;
+    const znany = sezony.find(s => s.razem > 0);
+    return znany ? znany.nr : (sezony[0] ? sezony[0].nr : null);
+  }
+
+  function renderuj(){
+    const fraza = document.getElementById('szukaj').value.trim().toLowerCase();
+    const lista = document.getElementById('lista');
+    const pusto = document.getElementById('pusto');
+    lista.innerHTML = '';
+
+    const pasujace = zyczenia
+      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
+      .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
+
+    const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
+    if(strona > liczbaStron) strona = liczbaStron;
+    if(strona < 1) strona = 1;
+    const start = (strona - 1) * NA_STRONE;
+    const naStronie = pasujace.slice(start, start + NA_STRONE);
+
+    document.getElementById('licznik').textContent = pasujace.length === 0
+      ? '0 pozycji'
+      : (start + 1) + '–' + (start + naStronie.length) + ' z ' + pasujace.length;
+    renderujPager(liczbaStron);
+
+    if(pasujace.length === 0){ pusto.style.display = 'block'; return; }
+    pusto.style.display = 'none';
+
+    naStronie.forEach(r => {
+      const sezony = parsujSezony(r.historia_sezonow);
+      const posiadane = parsujPosiadane(r.odcinki_posiadane);
+      let wybrany = wybranySezon[r.id];
+      if(!sezony.some(s => s.nr === wybrany)) wybrany = domyslnySezon(sezony, posiadane);
+
+      let razemOdc = 0, mamOdc = 0;
+      sezony.forEach(s => { razemOdc += s.razem; mamOdc += policzSezon(s, posiadane); });
+      const kompletne = czyKompletne(sezony, posiadane);
+
+      const metaCzesci = [r.rok, r.kraj].filter(Boolean);
+      if(sezony.length > 0) metaCzesci.push(odmianaSezonow(sezony.length));
+
+      let dol = '';
+      if(sezony.length === 0){
+        dol = '<div class="brak-sezonow">Brak informacji o sezonach — uzupełnij pole „sezony (całość)” w tabeli, np. „[✓] S01: 10 odc.”.</div>';
+      } else {
+        const chipy = sezony.map(s => {
+          const mam = policzSezon(s, posiadane);
+          let klasa = 'season-chip';
+          if(s.razem === 0) klasa += ' nieznany';
+          else if(mam >= s.razem) klasa += ' done';
+          else if(mam > 0) klasa += ' partial';
+          if(s.nr === wybrany) klasa += ' selected';
+          return '<button class="' + klasa + '" data-akcja="sezon" data-id="' + r.id + '" data-nr="' + s.nr + '">S' + pad2(s.nr) + '</button>';
+        }).join('');
+
+        const sel = sezony.find(s => s.nr === wybrany);
+        let siatka = '';
+        if(sel && sel.razem > 0){
+          const zbior = posiadane.get(sel.nr) || new Set();
+          let piksele = '';
+          for(let e = 1; e <= sel.razem; e++){
+            piksele += '<button class="ep-pixel' + (zbior.has(e) ? ' done' : '') + '" data-akcja="odc" data-id="' + r.id +
+              '" data-nr="' + sel.nr + '" data-odc="' + e + '" title="S' + pad2(sel.nr) + 'E' + pad2(e) + '">' + pad2(e) + '</button>';
+          }
+          siatka =
+            '<div class="ep-progress"><span>S' + pad2(sel.nr) + ' — ' + policzSezon(sel, posiadane) + ' / ' + sel.razem + ' odcinków</span>' +
+              '<button class="mini-btn" data-akcja="caly" data-id="' + r.id + '" data-nr="' + sel.nr + '">cały sezon</button>' +
+              '<button class="mini-btn" data-akcja="wyczysc" data-id="' + r.id + '" data-nr="' + sel.nr + '">wyczyść</button>' +
+            '</div><div class="ep-grid">' + piksele + '</div>';
+        } else if(sel){
+          siatka = '<div class="brak-sezonow">Nieznana liczba odcinków w sezonie S' + pad2(sel.nr) + '.</div>';
+        }
+        dol = '<div class="season-row">' + chipy + '</div>' + siatka;
+      }
+
+      const potwierdza = oczekujeArchiwum === r.id;
+      const el = document.createElement('div');
+      el.className = 'zyczenie';
+      el.innerHTML =
+        '<div class="zyczenie-top">' +
+          '<div class="poster">' + escapeHtml(inicjalTytulu(r.tytul)) + '</div>' +
+          '<div class="card-main">' +
+            '<h3>' + escapeHtml(r.tytul || '(bez tytułu)') + '</h3>' +
+            '<div class="meta">' + escapeHtml(metaCzesci.join(' · ')) + '</div>' +
+            '<p class="desc">' + escapeHtml(r.opis || '') + '</p>' +
+          '</div>' +
+          '<div class="card-side">' +
+            (razemOdc > 0 ? '<div class="suma">razem ' + mamOdc + ' / ' + razemOdc + ' odc.</div>' : '') +
+            (kompletne
+              ? '<button class="add-btn' + (potwierdza ? ' confirm' : '') + '" data-akcja="archiwum" data-id="' + r.id + '">' +
+                  (potwierdza ? 'na pewno?' : 'przenieś do archiwum') + '</button>'
+              : '') +
+          '</div>' +
+        '</div>' + dol;
+      lista.appendChild(el);
+    });
+  }
+
+  async function zapiszPosiadane(rekord, posiadane){
+    const sezony = parsujSezony(rekord.historia_sezonow);
+    const tekst = zapiszLinie(sezony, posiadane);
+    rekord.odcinki_posiadane = tekst;
+    renderuj();
+    try{
+      await grist.docApi.applyUserActions([
+        ['UpdateRecord', 'ListaZyczen', rekord.id, { odcinki_posiadane: tekst }]
+      ]);
+    } catch(e){
+      pokazBlad('Nie udało się zapisać zmiany: ' + e.message);
+      await wczytajDane();
+    }
+  }
+
+  async function doArchiwum(id){
+    const r = zyczenia.find(x => x.id === id);
+    if(!r) return;
+    const pola = polaKarty(r);
+    pola.status = 'kompletny';
+    pola.historia_sezonow = r.historia_sezonow || '';
+    const istniejacy = znajdzWSerialach(r.tytul, r.rok);
+    const akcje = [];
+    if(istniejacy){
+      const zmiany = { status: 'kompletny' };
+      if(pola.historia_sezonow) zmiany.historia_sezonow = pola.historia_sezonow;
+      akcje.push(['UpdateRecord', 'Seriale', istniejacy.id, zmiany]);
+    } else {
+      akcje.push(['AddRecord', 'Seriale', null, pola]);
+    }
+    akcje.push(['RemoveRecord', 'ListaZyczen', id]);
+    try{
+      await grist.docApi.applyUserActions(akcje);
+      zyczenia = zyczenia.filter(x => x.id !== id);
+      oczekujeArchiwum = null;
+      pokazKomunikat('Przeniesiono „' + r.tytul + '” do archiwum.');
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się przenieść do archiwum: ' + e.message);
+    }
+  }
+
+  async function wczytajDane(){
+    try{
+      const t = await grist.docApi.fetchTable('ListaZyczen');
+      zyczenia = [];
+      for(let i = 0; i < t.id.length; i++){
+        zyczenia.push({
+          id: t.id[i],
+          tytul: t.tytul ? t.tytul[i] : '',
+          link_epguides: t.link_epguides ? t.link_epguides[i] : '',
+          rok: t.rok ? t.rok[i] : '',
+          kraj: t.kraj ? t.kraj[i] : '',
+          historia_sezonow: t.historia_sezonow ? t.historia_sezonow[i] : '',
+          odcinki_posiadane: t.odcinki_posiadane ? t.odcinki_posiadane[i] : '',
+          opis: t.opis ? t.opis[i] : '',
+          plakat: t.plakat ? t.plakat[i] : null,
+        });
+      }
+      await wczytajNaglowek();
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
+    }
+  }
+
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-akcja]');
+    const dysk = ev.target.closest('.disk-gauge');
+
+    if(oczekujeArchiwum !== null && !(btn && btn.dataset.akcja === 'archiwum' && Number(btn.dataset.id) === oczekujeArchiwum)){
+      oczekujeArchiwum = null;
+      renderuj();
+    }
+
+    if(btn){
+      const akcja = btn.dataset.akcja;
+      const id = Number(btn.dataset.id);
+      const rekord = zyczenia.find(x => x.id === id);
+
+      if(akcja === 'wstecz' || akcja === 'dalej'){
+        if(!btn.disabled){ strona += (akcja === 'dalej') ? 1 : -1; renderuj(); window.scrollTo(0, 0); }
+      }
+      else if(akcja === 'archiwum'){
+        if(oczekujeArchiwum === id){ doArchiwum(id); }
+        else { oczekujeArchiwum = id; renderuj(); }
+      }
+      else if(rekord && akcja === 'sezon'){
+        if(!btn.classList.contains('nieznany')){ wybranySezon[id] = Number(btn.dataset.nr); renderuj(); }
+      }
+      else if(rekord && (akcja === 'odc' || akcja === 'caly' || akcja === 'wyczysc')){
+        const nr = Number(btn.dataset.nr);
+        const sezony = parsujSezony(rekord.historia_sezonow);
+        const s = sezony.find(x => x.nr === nr);
+        const posiadane = parsujPosiadane(rekord.odcinki_posiadane);
+        const zbior = new Set(posiadane.get(nr) || []);
+        if(akcja === 'odc'){
+          const e = Number(btn.dataset.odc);
+          if(zbior.has(e)) zbior.delete(e); else zbior.add(e);
+        } else if(akcja === 'caly' && s){
+          for(let e = 1; e <= s.razem; e++) zbior.add(e);
+        } else if(akcja === 'wyczysc'){
+          zbior.clear();
+        }
+        posiadane.set(nr, zbior);
+        wybranySezon[id] = nr;
+        zapiszPosiadane(rekord, posiadane);
+      }
+      return;
+    }
+
+    const bylOtwarty = dysk && dysk.classList.contains('open');
+    document.querySelectorAll('.disk-gauge.open').forEach(g => g.classList.remove('open'));
+    if(dysk && !bylOtwarty) dysk.classList.add('open');
+  });
+
+  document.getElementById('szukaj').addEventListener('input', () => { strona = 1; renderuj(); });
+
+  renderujNav();
+  renderujDyski();
+  grist.ready({ requiredAccess: 'full' });
+  grist.onRecords(wczytajDane);
+  wczytajDane();
+</script>
+
+</body>
+</html>
