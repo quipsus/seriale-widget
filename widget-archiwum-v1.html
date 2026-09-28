@@ -60,16 +60,16 @@ display:flex; justify-content:space-between; align-items:baseline;
 .disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
 .filmstrip{
 display:flex; align-items:center; gap: 2px;
-background: #154565; padding: 4px 5px; border-radius: 4px; position: relative;
+background: #FFFFFF; border: 1px solid #BFCFD9; padding: 4px 5px; border-radius: 4px; position: relative;
 }
 .filmstrip::before, .filmstrip::after{
 content:””; position:absolute; left:5px; right:5px; height:3px;
-background-image: radial-gradient(circle, #E8EEF2 1.2px, transparent 1.4px);
+background-image: radial-gradient(circle, #BFCFD9 1.2px, transparent 1.4px);
 background-size: 8px 3px; background-repeat: repeat-x;
 }
 .filmstrip::before{ top: 1px; }
 .filmstrip::after{ bottom: 1px; }
-.filmstrip-frame{ flex: 1; height: 14px; background: #3A5464; border-radius: 1px; }
+.filmstrip-frame{ flex: 1; height: 14px; background: #E8EEF2; border-radius: 1px; }
 .filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
 .filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
 .filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
@@ -99,7 +99,9 @@ background: transparent; width: 260px; color: #154565;
 .toolbar input[type=text]:focus{ outline:none; border-bottom-color: #4FA3DA; }
 .count{ font-size: 0.8rem; color: #526A7A; }
 
-.chips{ display:flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.filtry{ display:flex; justify-content: space-between; align-items:center; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.filtry-dol{ margin: 16px 0 0; justify-content: flex-end; }
+.chips{ display:flex; gap: 6px; flex-wrap: wrap; }
 .chip{
 font-family: inherit; font-weight: 600; font-size: 0.82rem;
 background: none; border: 2px solid #4FA3DA; color: #2C7DB3;
@@ -108,15 +110,15 @@ padding: 7px 14px; cursor: pointer; border-radius: 8px;
 .chip.active{ background: #4FA3DA; color: #F4F7F8; }
 .chip:not(.active):hover{ background: #E8EEF2; }
 
-.pager{ display:flex; justify-content:center; align-items:center; gap: 12px; margin: 8px 0 12px; }
+.pager{ display:flex; align-items:center; gap: 8px; margin-left: auto; }
 .pager button{
-font-family: inherit; font-weight: 600; font-size: 0.85rem;
+font-family: inherit; font-weight: 700; font-size: 1.3rem; line-height: 1;
 border: 2px solid #154565; background: #F4F7F8; color: #154565;
-padding: 8px 16px; cursor: pointer; border-radius: 8px;
+width: 40px; height: 36px; padding: 0 0 3px; cursor: pointer; border-radius: 8px;
 }
 .pager button:hover:not(:disabled){ background: #154565; color: #F4F7F8; }
 .pager button:disabled{ opacity: 0.35; cursor: default; }
-.pager .info{ font-size: 0.85rem; color: #526A7A; min-width: 110px; text-align:center; }
+.pager .info{ font-size: 0.85rem; color: #526A7A; min-width: 56px; text-align:center; }
 
 .cards{ display:flex; flex-direction:column; gap: 8px; }
 
@@ -190,12 +192,14 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
     <input type="text" id="szukaj" placeholder="szukaj tytułu…">
     <div class="count" id="licznik"></div>
   </div>
-  <div class="chips" id="chips"></div>
-  <div class="pager" id="pager-gora"></div>
+  <div class="filtry" id="filtry">
+    <div class="chips" id="chips"></div>
+    <div class="pager" id="pager-gora"></div>
+  </div>
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
   <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
-  <div class="pager" id="pager-dol"></div>
+  <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
 </div>
 
 <script>
@@ -304,11 +308,14 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
 
   function renderujPager(liczbaStron){
     const html = liczbaStron <= 1 ? '' :
-      '<button data-akcja="wstecz"' + (strona <= 1 ? ' disabled' : '') + '>‹ poprzednia</button>' +
-      '<span class="info">strona ' + strona + ' z ' + liczbaStron + '</span>' +
-      '<button data-akcja="dalej"' + (strona >= liczbaStron ? ' disabled' : '') + '>następna ›</button>';
+      '<button data-akcja="wstecz" aria-label="poprzednia strona"' + (strona <= 1 ? ' disabled' : '') + '>‹</button>' +
+      '<span class="info">' + strona + ' / ' + liczbaStron + '</span>' +
+      '<button data-akcja="dalej" aria-label="następna strona"' + (strona >= liczbaStron ? ' disabled' : '') + '>›</button>';
     document.getElementById('pager-gora').innerHTML = html;
     document.getElementById('pager-dol').innerHTML = html;
+    // widoki bez filtrów statusu: górny wiersz pokazujemy tylko wtedy, gdy są strzałki
+    const wiersz = document.getElementById('filtry');
+    if(wiersz && !document.getElementById('chips')) wiersz.style.display = html ? 'flex' : 'none';
   }
 
   function renderuj(){
