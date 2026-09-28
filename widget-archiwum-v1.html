@@ -145,6 +145,84 @@
   .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
   .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
   .desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+  .kolejny{ font-size: 0.82rem; color: #154565; margin: 0 0 8px; }
+  .kolejny .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
+
+  .card-dol{ grid-column: 1 / -1; }
+  .card-main h3 a{ color: inherit; text-decoration: none; }
+  .card-main h3 a:hover{ text-decoration: underline; }
+  .komunikat{ display:none; background:#E7F3F0; border:1px solid #5EBAA3; color:#2E6E5D; padding:10px 14px; margin-bottom:12px; font-size:0.85rem; border-radius:8px; }
+  .nastepny{
+    font-weight: 800; font-size: 0.82rem; color: #CB704D; border: 2px solid #CB704D;
+    border-radius: 8px; padding: 5px 9px; width: 100%; text-align: center; background: none;
+  }
+  .nastepny.dostepny{ background: #CB704D; color: #FFFFFF; }
+  .season-row{ display:grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap:5px; margin:4px 0; }
+  .season-chip{
+    font-family: inherit; font-size: 0.74rem; font-weight: 600; border: 1px solid #BFCFD9; padding: 5px 4px;
+    cursor: pointer; color: #526A7A; text-align: center; border-radius: 8px; background: none;
+  }
+  .season-chip.done{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
+  .season-chip.partial{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
+  .season-chip.selected{ outline: 2px solid #154565; outline-offset: 1px; }
+  .ep-progress{ font-size: 0.76rem; color: #526A7A; margin: 8px 0 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .ep-progress .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 700; margin-left: 8px; }
+  .mini-btn{ font-family: inherit; font-size: 0.72rem; font-weight: 600; background: none; border: 1px solid #154565; color: #154565; padding: 4px 10px; cursor: pointer; border-radius: 8px; }
+  .mini-btn:hover{ background: #154565; color: #F4F7F8; }
+  .ep-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; margin: 8px 0 4px; }
+  .ep-pixel{
+    font-family: inherit; height: 28px; background: #FFFFFF; border: 1px solid #BFCFD9; cursor: pointer;
+    display:flex; align-items:center; justify-content:center; font-size: 0.68rem; font-weight: 600;
+    color: #526A7A; border-radius: 8px; padding: 0;
+  }
+  .ep-pixel.done{ background: #5EBAA3; border-color: #5EBAA3; color: #2E6E5D; }
+  .ep-pixel.do-nagrania{ border: 2px solid #CB704D; color: #B25A38; font-weight: 800; }
+  .ep-pixel.kolejny-odc{ background: #FBEEE8; }
+  .ep-pixel.luka{ background: #CB704D; border-color: #CB704D; color: #FFFFFF; }
+  .legenda{ display:flex; gap: 14px; flex-wrap: wrap; font-size: 0.68rem; color: #526A7A; margin-top: 4px; }
+  .legenda i{ display:inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; border: 1px solid #BFCFD9; }
+  .legenda i.lg-done{ background: #5EBAA3; border-color: #5EBAA3; }
+  .legenda i.lg-dn{ border: 2px solid #CB704D; }
+  .legenda i.lg-luka{ background: #CB704D; border-color: #CB704D; }
+  .legenda i.lg-pr{ background: #E8EEF2; border-style: dashed; }
+  .ep-pixel.przyszly{ background: #E8EEF2; border-style: dashed; color: #8AA0AE; cursor: default; }
+  .ep-pixel.brak-daty{ background: #E8EEF2; }
+
+  .toolbar-prawa{ display:flex; align-items:center; gap: 12px; }
+  .plus-btn{
+    font-family: inherit; font-weight: 700; font-size: 1.4rem; line-height: 1;
+    border: 2px solid #154565; background: #F4F7F8; color: #154565;
+    width: 40px; height: 36px; padding: 0 0 3px; cursor: pointer; border-radius: 8px;
+  }
+  .plus-btn:hover{ background: #154565; color: #F4F7F8; }
+  .dodaj-panel{
+    background: #E8EEF2; border: 1px solid #BFCFD9; border-radius: 10px; padding: 14px;
+    margin-bottom: 12px; grid-template-columns: 2fr 1fr 1fr; gap: 10px;
+  }
+  .dodaj-panel input{
+    font-family: inherit; font-size: 0.9rem; padding: 9px 10px; border: 1px solid #BFCFD9;
+    border-radius: 8px; background: #FFFFFF; color: #154565; min-width: 0;
+  }
+  .dodaj-panel input:focus{ outline: none; border-color: #4FA3DA; }
+  .dodaj-panel .szeroki{ grid-column: 1 / -1; }
+  .dodaj-przyciski{ display: flex; gap: 8px; }
+  .dodaj-zapisz{ font-family: inherit; font-weight: 700; font-size: 0.85rem; background: #4FA3DA; color: #F4F7F8; border: none; padding: 9px 18px; cursor: pointer; border-radius: 8px; }
+  .dodaj-zapisz:hover{ background: #154565; }
+  .dodaj-anuluj{ font-family: inherit; font-weight: 700; font-size: 0.85rem; background: none; color: #526A7A; border: 1px solid #BFCFD9; padding: 9px 18px; cursor: pointer; border-radius: 8px; }
+  .dodaj-anuluj:hover{ border-color: #154565; color: #154565; }
+
+  .link-btn{
+    font-family: inherit; font-weight: 600; font-size: 0.78rem; border: 1px solid #BFCFD9; color: #526A7A;
+    padding: 8px 12px; border-radius: 8px; text-decoration: none; background: none; white-space: nowrap;
+  }
+  .link-btn:hover{ border-color: #154565; color: #154565; }
+  .kropka{ color: #CB704D; }
+  nav a.active .kropka{ color: #F4B393; }
+  .location-btn{ position: relative; display: block; cursor: pointer; }
+  .location-btn.brak{ color: #526A7A; border-style: dashed; }
+  .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .zrodlo{ text-align: center; font-size: 0.7rem; color: #526A7A; margin-top: 24px; }
+  .zrodlo a{ color: inherit; }
 
   .card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
 
@@ -190,7 +268,18 @@
 <div class="wrap">
   <div class="toolbar">
     <input type="text" id="szukaj" placeholder="szukaj tytułu…">
-    <div class="count" id="licznik"></div>
+    <div class="toolbar-prawa"><a class="link-btn" href="https://github.com/quipsus/seriale-skrypty/actions/workflows/odcinki.yml" target="_blank" rel="noopener" title="Otwiera GitHub Actions - tam kliknij Run workflow">sprawdź nowe sezony</a><div class="count" id="licznik"></div><button class="plus-btn" id="plus" title="dodaj ręcznie" aria-label="dodaj ręcznie">+</button></div>
+  </div>
+  <div class="komunikat" id="komunikat"></div>
+  <div class="dodaj-panel" id="dodaj-panel" style="display:none;">
+    <input type="text" id="dodaj-tytul" placeholder="tytuł (np. The Wire)">
+    <input type="text" id="dodaj-rok" placeholder="rok" inputmode="numeric" maxlength="4">
+    <input type="text" id="dodaj-kraj" placeholder="kraj (np. US)" maxlength="6">
+    <input type="text" id="dodaj-link" class="szeroki" placeholder="link do epguides (opcjonalnie)">
+    <div class="dodaj-przyciski szeroki">
+      <button class="dodaj-zapisz" id="dodaj-zapisz">dodaj</button>
+      <button class="dodaj-anuluj" id="dodaj-anuluj">anuluj</button>
+    </div>
   </div>
   <div class="filtry" id="filtry">
     <div class="chips" id="chips"></div>
@@ -200,6 +289,7 @@
   <div class="cards" id="lista"></div>
   <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
   <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
+  <div class="zrodlo">dane: <a href="https://www.tvmaze.com" target="_blank" rel="noopener">TVmaze</a></div>
 </div>
 
 <script>
@@ -208,6 +298,8 @@
   const STATUSY_W_WIDOKU = ['kompletny', 'niekompletny'];
   // Klik w tag przełącza kompletny <-> niekompletny.
   const KOLEJNOSC_STATUSOW = ['kompletny', 'niekompletny'];
+  const POKAZ_ODCINKI = false;
+  const STATUS_NOWEGO = 'kompletny';
 
   // Zakładki w nagłówku: [nazwa, numer strony w Griście]. Klik przenosi na tę stronę.
   const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
@@ -265,15 +357,86 @@
     return n + ' sezonów';
   }
 
+  // ---- Ręczne dodawanie ("+"): krótki formularz nad listą ----
+  function doFormatuBazy(tytul){
+    // "The Wire" -> "Wire, The"; rok w nawiasie na końcu wycinamy do osobnego pola
+    let t = (tytul || '').trim();
+    let rok = null;
+    const m = /^(.*?)\s*\((\d{4})\)\s*$/.exec(t);
+    if(m && m[1].trim()){ t = m[1].trim(); rok = Number(m[2]); }
+    const a = /^(The|A|An)\s+(.+)$/i.exec(t);
+    if(a){
+      const art = a[1].charAt(0).toUpperCase() + a[1].slice(1).toLowerCase();
+      t = a[2].trim() + ', ' + art;
+    }
+    return { tytul: t, rokZNazwy: rok };
+  }
+
+  function przelaczPanel(pokaz){
+    const p = document.getElementById('dodaj-panel');
+    if(!p) return;
+    p.style.display = pokaz ? 'grid' : 'none';
+    if(pokaz){
+      const b = document.getElementById('blad');
+      if(b) b.innerHTML = '';
+      document.getElementById('dodaj-tytul').focus();
+    }
+  }
+
+  function odczytajFormularz(){
+    const wartosc = id => (document.getElementById(id).value || '').trim();
+    const rokTxt = wartosc('dodaj-rok');
+    const link = wartosc('dodaj-link');
+    return {
+      tytul: wartosc('dodaj-tytul'),
+      rok: /^\d{4}$/.test(rokTxt) ? Number(rokTxt) : null,
+      kraj: wartosc('dodaj-kraj').toUpperCase(),
+      link: /^https?:\/\//i.test(link) ? link : '',
+    };
+  }
+
+  function wyczyscFormularz(){
+    ['dodaj-tytul', 'dodaj-rok', 'dodaj-kraj', 'dodaj-link'].forEach(id => { document.getElementById(id).value = ''; });
+  }
+
+  function podepnijPanelDodawania(dodaj){
+    const plus = document.getElementById('plus');
+    if(!plus) return;
+    plus.addEventListener('click', () => {
+      przelaczPanel(document.getElementById('dodaj-panel').style.display === 'none');
+    });
+    document.getElementById('dodaj-anuluj').addEventListener('click', () => przelaczPanel(false));
+    const wyslij = async () => {
+      const d = odczytajFormularz();
+      if(!d.tytul){ pokazBlad('Wpisz tytuł.'); return; }
+      await dodaj(d);
+    };
+    document.getElementById('dodaj-zapisz').addEventListener('click', wyslij);
+    document.getElementById('dodaj-panel').addEventListener('keydown', ev => {
+      if(ev.key === 'Enter'){ ev.preventDefault(); wyslij(); }
+    });
+  }
+
+  // Tytuł jako link do strony serialu na epguides (jeśli jest link).
+  function tytulHtml(r){
+    const t = escapeHtml(r.tytul || '(bez tytułu)');
+    const l = (r.link_epguides || '').trim();
+    if(/^https?:\/\//i.test(l)) return '<a href="' + escapeHtml(l) + '" target="_blank" rel="noopener">' + t + '</a>';
+    return t;
+  }
+
   function fmtGb(gb){
     gb = Number(gb) || 0;
     return gb >= 1000 ? (gb / 1000).toFixed(1).replace('.', ',') + ' TB' : Math.round(gb) + ' GB';
   }
 
+  let liczbaNowosci = 0;   // ile pozycji czeka w tabeli Nowosci (kropka przy zakładce)
+
   function renderujNav(){
     document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
       '<a href="' + ADRES_STRON + z[1] + '" target="_top"' +
-      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) + '</a>'
+      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) +
+      (z[0] === 'nowości' && liczbaNowosci > 0 ? ' <span class="kropka" title="' + liczbaNowosci + ' do przejrzenia">●</span>' : '') + '</a>'
     ).join('');
   }
 
@@ -375,27 +538,367 @@
       const sezony = liczbaSezonow(r.historia_sezonow);
       const metaCzesci = [r.rok, r.kraj].filter(Boolean);
       if(sezony > 0) metaCzesci.push(odmianaSezonow(sezony));
+      let kolejnyHtml = '';
+      if(r.kolejny){
+        const data = dataPL(r.kolejny_data);
+        kolejnyHtml = '<div class="kolejny">kolejny: <strong>' + escapeHtml(r.kolejny) + '</strong>' +
+          (data ? ' · ' + escapeHtml(data) : ' · data nieznana') +
+          (Number(r.zalegle) > 0 ? '<span class="zaleglosc">+' + Number(r.zalegle) + ' do nadrobienia</span>' : '') + '</div>';
+      }
       const historiaHtml = r.historia_sezonow
         ? '<details><summary>historia sezonów</summary><div class="history-block">' + escapeHtml(r.historia_sezonow) + '</div></details>'
         : '';
 
+      const model = POKAZ_ODCINKI ? modelOdcinkow(r) : null;
+      let nastepnyHtml = '', dolHtml = '';
+      if(model){
+        kolejnyHtml = '';
+        nastepnyHtml = pigulkaKolejnego(model);
+        dolHtml = '<div class="card-dol">' + siatkaOdcinkow(r, model) + '</div>';
+      }
       karta.innerHTML =
         plakatHtml(r) +
         '<div class="card-main">' +
-          '<h3>' + escapeHtml(r.tytul || '(bez tytułu)') + '</h3>' +
+          '<h3>' + tytulHtml(r) + '</h3>' +
           '<div class="meta">' + escapeHtml(metaCzesci.join(' · ')) + '</div>' +
+          kolejnyHtml +
           '<p class="desc">' + escapeHtml(r.opis || '') + '</p>' +
           historiaHtml +
         '</div>' +
         '<div class="card-side">' +
+          nastepnyHtml +
           '<button class="tag ' + escapeHtml(r.status || '') + '" data-id="' + r.id + '">' + escapeHtml(r.status || '—') + '</button>' +
           '<div class="tag-hint">kliknij, by zmienić</div>' +
-          ((r.dysk || r.rozmiar_gb)
-            ? '<div class="location-btn">' + escapeHtml(r.dysk || '—') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') + '</div>'
-            : '') +
-        '</div>';
+          '<label class="location-btn' + (r.dysk ? '' : ' brak') + '" title="kliknij, by zmienić dysk">' +
+            escapeHtml(r.dysk || 'wybierz dysk') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') +
+            '<select class="dysk-wybor" data-id="' + r.id + '" aria-label="dysk">' +
+              ['', 'dysk_0', 'dysk_1', 'dysk_2'].map(o => '<option value="' + o + '"' + (o === (r.dysk || '') ? ' selected' : '') + '>' + (o || '— brak —') + '</option>').join('') +
+            '</select></label>' +
+        '</div>' + dolHtml;
       lista.appendChild(karta);
     });
+  }
+
+  // ---- Odcinki do odklikiwania (widok seriali w trakcie emisji) ----
+  function pad2(n){ return String(n).padStart(2, '0'); }
+  function dzisISO(){ return new Date().toISOString().slice(0, 10); }
+  function isoPL(iso){
+    if(!iso) return '';
+    const p = iso.split('-');
+    return p[2] + '.' + p[1] + '.' + p[0];
+  }
+  function isoNaEpoke(iso){
+    if(!iso) return null;
+    const p = iso.split('-').map(Number);
+    return Date.UTC(p[0], p[1] - 1, p[2]) / 1000;
+  }
+
+  let komunikatTimer = null;
+  function pokazKomunikat(tekst){
+    const el = document.getElementById('komunikat');
+    if(!el) return;
+    el.textContent = tekst;
+    el.style.display = tekst ? 'block' : 'none';
+    clearTimeout(komunikatTimer);
+    if(tekst) komunikatTimer = setTimeout(() => { el.style.display = 'none'; }, 7000);
+  }
+
+  // "S03: 2026-10-23 2026-10-30 ?" -> Map(3 -> ['2026-10-23', '2026-10-30', null])
+  function parsujTvm(tekst){
+    const mapa = new Map();
+    (tekst || '').split('\n').forEach(linia => {
+      const m = /^S(\d{1,3}):\s*(.*)$/.exec(linia.trim());
+      if(!m) return;
+      const tokeny = m[2].trim().split(/\s+/).filter(Boolean);
+      mapa.set(Number(m[1]), tokeny.map(t => /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null));
+    });
+    return mapa;
+  }
+
+  // "[~] S03: 03/10 odc. {01-03,05}" -> Map(3 -> Set{1,2,3,5})
+  function parsujNagrane(tekst){
+    const wynik = new Map();
+    (tekst || '').split('\n').forEach(linia => {
+      const m = /S(\d{1,3}):\s*(\d+)\s*\/\s*(\d+|\?\?)/.exec(linia);
+      if(!m) return;
+      const nr = Number(m[1]), n = Number(m[2]);
+      const zbior = new Set();
+      const b = /\{([^}]*)\}/.exec(linia);
+      if(b){
+        b[1].split(',').forEach(cz => {
+          const p = cz.trim();
+          const r = /^(\d+)\s*-\s*(\d+)$/.exec(p);
+          if(r){ for(let e = Number(r[1]); e <= Number(r[2]) && e < 10000; e++) zbior.add(e); }
+          else if(/^\d+$/.test(p)) zbior.add(Number(p));
+        });
+      } else if(n > 0){
+        for(let e = 1; e <= n; e++) zbior.add(e);
+      }
+      wynik.set(nr, zbior);
+    });
+    return wynik;
+  }
+
+  function zakresy(zbior){
+    const a = Array.from(zbior).sort((x, y) => x - y);
+    const out = [];
+    let s = null, p = null;
+    const zamknij = () => { out.push(s === p ? pad2(s) : pad2(s) + '-' + pad2(p)); };
+    a.forEach(e => {
+      if(s === null){ s = p = e; }
+      else if(e === p + 1){ p = e; }
+      else { zamknij(); s = p = e; }
+    });
+    if(s !== null) zamknij();
+    return out.join(',');
+  }
+
+  // ten sam format zapisuje skrypt sprawdz_odcinki.py
+  function zapiszNagrane(mapa, liczby){
+    return Array.from(mapa.keys()).sort((a, b) => a - b).map(nr => {
+      const razem = liczby[nr] || 0;
+      const trzymane = Array.from(mapa.get(nr)).filter(e => razem === 0 || e <= razem);
+      const n = trzymane.length;
+      const sym = n === 0 ? '[ ]' : (razem > 0 && n >= razem ? '[◇]' : '[~]');
+      const baza = sym + ' S' + pad2(nr) + ': ' + pad2(n) + '/' + (razem ? pad2(razem) : '??') + ' odc.';
+      return n > 0 ? baza + ' {' + zakresy(new Set(trzymane)) + '}' : baza;
+    }).join('\n');
+  }
+
+  function najwSezonHistorii(tekst){
+    let max = 0;
+    const re = /S(\d{1,3}):/g;
+    let m;
+    while((m = re.exec(tekst || '')) !== null) max = Math.max(max, Number(m[1]));
+    return max;
+  }
+
+  // Wpisuje sezon do historii jako ukończony (zmienia liczbę w istniejącej linii albo dopisuje nową).
+  function ustawSezonWHistorii(tekst, nr, ile){
+    const linie = (tekst || '').trim() ? tekst.replace(/\s+$/, '').split('\n') : [];
+    const wzor = new RegExp('(S0*' + nr + ':\\s*)(\\d+|\\?\\?)');
+    for(let i = 0; i < linie.length; i++){
+      if(wzor.test(linie[i])){
+        linie[i] = linie[i].replace(wzor, (cale, przed) => przed + pad2(ile));
+        return linie.join('\n');
+      }
+    }
+    linie.push('[✓] S' + pad2(nr) + ': ' + pad2(ile) + ' odc.');
+    return linie.join('\n');
+  }
+
+  // Model karty: co nagrane, jaki odcinek jest kolejny, ile zaległych
+  function modelOdcinkow(r){
+    const tvm = parsujTvm(r.odcinki_tvm);
+    if(tvm.size === 0) return null;
+    const nagrane = parsujNagrane(r.odcinki_nagrane);
+    const najw = najwSezonHistorii(r.historia_sezonow);
+    const dzis = dzisISO();
+    const sezony = Array.from(tvm.keys()).sort((a, b) => a - b);
+    const nagrany = (s, e) => nagrane.has(s) ? nagrane.get(s).has(e) : s <= najw;
+    let kolejny = null, zalegle = 0;
+    sezony.forEach(s => {
+      tvm.get(s).forEach((data, i) => {
+        const e = i + 1;
+        if(!nagrany(s, e)){
+          if(!kolejny) kolejny = { s: s, e: e, data: data };
+          if(data && data <= dzis) zalegle++;
+        }
+      });
+    });
+    return { tvm, nagrane, najw, dzis, sezony, nagrany, kolejny, zalegle };
+  }
+
+  // Status wynikający z kolejnego odcinka (te same zasady co w skrypcie sprawdz_odcinki.py)
+  function statusZModelu(m, statusTvm){
+    if(m.kolejny){
+      if(m.kolejny.e === 1) return (m.kolejny.data && m.kolejny.data <= m.dzis) ? 'emitowany' : 'oczekiwany';
+      return 'emitowany';
+    }
+    return statusTvm === 'Ended' ? 'kompletny' : 'oczekiwany';
+  }
+
+  function pigulkaKolejnego(m){
+    if(!m || !m.kolejny) return '';
+    const dostepny = m.kolejny.data && m.kolejny.data <= m.dzis;
+    return '<div class="nastepny' + (dostepny ? ' dostepny' : '') + '" title="kolejny odcinek: S' +
+      pad2(m.kolejny.s) + 'E' + pad2(m.kolejny.e) + '">' + (dostepny ? '●' : '○') + ' ' +
+      escapeHtml(m.kolejny.data ? isoPL(m.kolejny.data) : 'brak daty') + '</div>';
+  }
+
+  function siatkaOdcinkow(r, m){
+    let wybrany = wybranySezon[r.id];
+    if(!m.tvm.has(wybrany)) wybrany = m.kolejny ? m.kolejny.s : m.sezony[m.sezony.length - 1];
+
+    const chipy = m.sezony.map(s => {
+      const dane = m.tvm.get(s);
+      const nagr = dane.filter((_, i) => m.nagrany(s, i + 1)).length;
+      let klasa = 'season-chip';
+      if(dane.length && nagr >= dane.length) klasa += ' done';
+      else if(nagr > 0) klasa += ' partial';
+      if(s === wybrany) klasa += ' selected';
+      return '<button class="' + klasa + '" data-oa="sezon" data-id="' + r.id + '" data-nr="' + s + '">S' + pad2(s) + '</button>';
+    }).join('');
+
+    const dane = m.tvm.get(wybrany) || [];
+    const nagrDla = dane.filter((_, i) => m.nagrany(wybrany, i + 1)).length;
+    const wyemitowane = dane.filter(d => d && d <= m.dzis).length;
+    let piksele = '';
+    let maxNagrany = 0;
+    dane.forEach((_, i) => { if(m.nagrany(wybrany, i + 1)) maxNagrany = i + 1; });
+    dane.forEach((data, i) => {
+      const e = i + 1;
+      const nagrany = m.nagrany(wybrany, e);
+      const przyszly = !!data && data > m.dzis;
+      const jestKolejny = m.kolejny && m.kolejny.s === wybrany && m.kolejny.e === e;
+      let klasa = 'ep-pixel';
+      if(nagrany) klasa += ' done';
+      else if(przyszly) klasa += ' przyszly';
+      else if(!data) klasa += ' brak-daty';
+      else klasa += ' do-nagrania';
+      if(!nagrany && data && data <= m.dzis && e < maxNagrany) klasa += ' luka';
+      if(jestKolejny && !nagrany) klasa += ' kolejny-odc';
+      piksele += '<button class="' + klasa + '" data-oa="odc" data-id="' + r.id + '" data-nr="' + wybrany +
+        '" data-odc="' + e + '"' + (przyszly && !nagrany ? ' disabled' : '') +
+        ' title="S' + pad2(wybrany) + 'E' + pad2(e) + (data ? ' · ' + isoPL(data) : ' · brak daty') + '">' + pad2(e) + '</button>';
+    });
+
+    return '<div class="season-row">' + chipy + '</div>' +
+      '<div class="ep-progress"><span>S' + pad2(wybrany) + ' — nagrane ' + nagrDla + ' / ' + dane.length +
+      ' · wyemitowane ' + wyemitowane + (m.zalegle > 0 ? '<span class="zaleglosc">do nadrobienia: ' + m.zalegle + '</span>' : '') + '</span>' +
+      '<button class="mini-btn" data-oa="wszystkie" data-id="' + r.id + '" data-nr="' + wybrany + '">wszystkie wyemitowane</button>' +
+      '<button class="mini-btn" data-oa="wyczysc" data-id="' + r.id + '" data-nr="' + wybrany + '">wyczyść</button></div>' +
+      '<div class="ep-grid">' + piksele + '</div>' +
+      '<div class="legenda"><span><i class="lg-done"></i>nagrany</span><span><i class="lg-dn"></i>do nagrania</span>' +
+      '<span><i class="lg-luka"></i>luka (pominięty)</span><span><i class="lg-pr"></i>jeszcze nie wyszedł</span></div>';
+  }
+
+  let wybranySezon = {};   // id rekordu -> numer wybranego sezonu
+
+  async function zmienOdcinki(id, nr, akcja, odc){
+    const r = wszystkieRekordy.find(x => x.id === id);
+    if(!r) return;
+    const m = modelOdcinkow(r);
+    if(!m || !m.tvm.has(nr)) return;
+    const dane = m.tvm.get(nr);
+
+    const nagrane = new Map();
+    m.nagrane.forEach((zb, s) => nagrane.set(s, new Set(zb)));
+    let zbior = nagrane.has(nr) ? nagrane.get(nr)
+      : (nr <= m.najw ? new Set(dane.map((_, i) => i + 1)) : new Set());
+    if(akcja === 'odc'){
+      if(zbior.has(odc)) zbior.delete(odc); else zbior.add(odc);
+    } else if(akcja === 'wszystkie'){
+      dane.forEach((d, i) => { if(!d || d <= m.dzis) zbior.add(i + 1); });
+    } else if(akcja === 'wyczysc'){
+      zbior = new Set();
+    }
+    nagrane.set(nr, zbior);
+    wybranySezon[id] = nr;
+
+    // sezony w całości wyemitowane i nagrane -> do historii
+    let historia = r.historia_sezonow || '';
+    const zakonczone = [];
+    nagrane.forEach((zb, s) => {
+      const d = m.tvm.get(s);
+      if(d && d.length && d.every((x, i) => zb.has(i + 1) && x && x <= m.dzis)) zakonczone.push(s);
+    });
+    zakonczone.forEach(s => {
+      historia = ustawSezonWHistorii(historia, s, m.tvm.get(s).length);
+      nagrane.delete(s);
+    });
+
+    const liczby = {};
+    m.tvm.forEach((v, k) => { liczby[k] = v.length; });
+    const nagraneTxt = zapiszNagrane(nagrane, liczby);
+    const nowy = modelOdcinkow({ odcinki_tvm: r.odcinki_tvm, odcinki_nagrane: nagraneTxt, historia_sezonow: historia });
+    const nowyStatus = statusZModelu(nowy, r.status_tvm);
+
+    const pola = {
+      odcinki_nagrane: nagraneTxt,
+      kolejny: nowy.kolejny ? 'S' + pad2(nowy.kolejny.s) + 'E' + pad2(nowy.kolejny.e) : '',
+      kolejny_data: nowy.kolejny ? isoNaEpoke(nowy.kolejny.data) : null,
+      zalegle: nowy.zalegle,
+    };
+    if(historia !== (r.historia_sezonow || '')) pola.historia_sezonow = historia;
+    if(nowyStatus !== r.status) pola.status = nowyStatus;
+
+    const stare = {};
+    Object.keys(pola).forEach(k => { stare[k] = r[k]; });
+    Object.assign(r, pola);
+    renderuj();
+    if(zakonczone.length){
+      pokazKomunikat('Sezon ' + zakonczone.map(s => 'S' + pad2(s)).join(', ') + ' skompletowany' +
+        (pola.status ? ' — status: ' + pola.status : '') + '.');
+    }
+    try{
+      await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, pola]]);
+    } catch(e){
+      Object.assign(r, stare);
+      renderuj();
+      pokazBlad('Nie udało się zapisać odcinków: ' + e.message);
+    }
+  }
+
+  // Obsługa kliknięć w sezony i odcinki; zwraca true, jeśli kliknięcie było "nasze"
+  function obsluzOdcinki(ev){
+    const btn = ev.target.closest('button[data-oa]');
+    if(!btn || btn.disabled) return false;
+    const id = Number(btn.dataset.id);
+    const nr = Number(btn.dataset.nr);
+    const akcja = btn.dataset.oa;
+    if(akcja === 'sezon'){ wybranySezon[id] = nr; renderuj(); }
+    else zmienOdcinki(id, nr, akcja, Number(btn.dataset.odc));
+    return true;
+  }
+
+  async function dodajRecznie(d){
+    const f = doFormatuBazy(d.tytul);
+    const rok = d.rok || f.rokZNazwy;
+    const t = f.tytul.toLowerCase();
+    const istniejacy = wszystkieRekordy.find(x => (x.tytul || '').toLowerCase() === t &&
+      (!rok || !x.rok || Number(x.rok) === Number(rok)));
+    if(istniejacy){
+      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (istniejacy.status || '—') + ').');
+      return;
+    }
+    const pola = { tytul: f.tytul, status: STATUS_NOWEGO };
+    if(rok) pola.rok = rok;
+    if(d.kraj) pola.kraj = d.kraj;
+    if(d.link) pola.link_epguides = d.link;
+    try{
+      await grist.docApi.applyUserActions([['AddRecord', 'Seriale', null, pola]]);
+      przelaczPanel(false);
+      wyczyscFormularz();
+      pokazKomunikat('Dodano „' + f.tytul + '” (status: ' + STATUS_NOWEGO + ').');
+      await wczytajDane();
+    } catch(e){
+      pokazBlad('Nie udało się dodać: ' + e.message);
+    }
+  }
+
+  async function zmienDysk(sel){
+    const id = Number(sel.dataset.id);
+    const r = wszystkieRekordy.find(x => x.id === id);
+    if(!r) return;
+    const stary = r.dysk || '';
+    r.dysk = sel.value;
+    renderuj();
+    renderujDyski();
+    try{
+      await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, { dysk: sel.value }]]);
+    } catch(e){
+      r.dysk = stary;
+      renderuj();
+      renderujDyski();
+      pokazBlad('Nie udało się zmienić dysku: ' + e.message);
+    }
+  }
+
+  function dataPL(sekundy){
+    if(typeof sekundy !== 'number' || !isFinite(sekundy)) return '';
+    const d = new Date(sekundy * 1000);
+    return String(d.getUTCDate()).padStart(2, '0') + '.' + String(d.getUTCMonth() + 1).padStart(2, '0') + '.' + d.getUTCFullYear();
   }
 
   async function onKlikStatus(btn){
@@ -433,6 +936,13 @@
     } catch(e){
       dyskiDane = [];   // brak tabeli Dyski nie powinien blokować reszty widoku
     }
+    try{
+      const n = await grist.docApi.fetchTable('Nowosci');
+      liczbaNowosci = n.id.length;
+    } catch(e){
+      liczbaNowosci = 0;
+    }
+    renderujNav();
   }
 
   async function wczytajDane(){
@@ -451,6 +961,13 @@
           rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
           opis: tabela.opis ? tabela.opis[i] : '',
           plakat_tmdb: tabela.plakat_tmdb ? tabela.plakat_tmdb[i] : '',
+          link_epguides: tabela.link_epguides ? tabela.link_epguides[i] : '',
+          odcinki_tvm: tabela.odcinki_tvm ? tabela.odcinki_tvm[i] : '',
+          odcinki_nagrane: tabela.odcinki_nagrane ? tabela.odcinki_nagrane[i] : '',
+          status_tvm: tabela.status_tvm ? tabela.status_tvm[i] : '',
+          kolejny: tabela.kolejny ? tabela.kolejny[i] : '',
+          kolejny_data: tabela.kolejny_data ? tabela.kolejny_data[i] : null,
+          zalegle: tabela.zalegle ? tabela.zalegle[i] : 0,
           historia_sezonow: tabela.historia_sezonow ? tabela.historia_sezonow[i] : '',
         });
       }
@@ -464,6 +981,7 @@
 
   // Jedna obsługa kliknięć dla całej strony.
   document.addEventListener('click', (ev) => {
+    if(POKAZ_ODCINKI && obsluzOdcinki(ev)) return;
     const tag = ev.target.closest('.tag[data-id]');
     if(tag){ onKlikStatus(tag); return; }
 
@@ -486,6 +1004,11 @@
     if(dysk && !bylOtwarty) dysk.classList.add('open');
   });
 
+  document.addEventListener('change', (ev) => {
+    const sel = ev.target.closest('.dysk-wybor');
+    if(sel) zmienDysk(sel);
+  });
+
   document.getElementById('szukaj').addEventListener('input', () => {
     strona = 1;
     renderuj();
@@ -493,6 +1016,7 @@
 
   renderujNav();
   renderujDyski();
+  podepnijPanelDodawania(dodajRecznie);
   grist.ready({ requiredAccess: 'full' });
   grist.onRecords(wczytajDane);
   wczytajDane();

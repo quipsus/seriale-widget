@@ -145,6 +145,84 @@
   .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
   .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
   .desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+  .kolejny{ font-size: 0.82rem; color: #154565; margin: 0 0 8px; }
+  .kolejny .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 600; margin-left: 6px; white-space: nowrap; }
+
+  .card-dol{ grid-column: 1 / -1; }
+  .card-main h3 a{ color: inherit; text-decoration: none; }
+  .card-main h3 a:hover{ text-decoration: underline; }
+  .komunikat{ display:none; background:#E7F3F0; border:1px solid #5EBAA3; color:#2E6E5D; padding:10px 14px; margin-bottom:12px; font-size:0.85rem; border-radius:8px; }
+  .nastepny{
+    font-weight: 800; font-size: 0.82rem; color: #CB704D; border: 2px solid #CB704D;
+    border-radius: 8px; padding: 5px 9px; width: 100%; text-align: center; background: none;
+  }
+  .nastepny.dostepny{ background: #CB704D; color: #FFFFFF; }
+  .season-row{ display:grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap:5px; margin:4px 0; }
+  .season-chip{
+    font-family: inherit; font-size: 0.74rem; font-weight: 600; border: 1px solid #BFCFD9; padding: 5px 4px;
+    cursor: pointer; color: #526A7A; text-align: center; border-radius: 8px; background: none;
+  }
+  .season-chip.done{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
+  .season-chip.partial{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
+  .season-chip.selected{ outline: 2px solid #154565; outline-offset: 1px; }
+  .ep-progress{ font-size: 0.76rem; color: #526A7A; margin: 8px 0 4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .ep-progress .zaleglosc{ background: #FBEEE8; color: #B25A38; border-radius: 8px; padding: 1px 8px; font-weight: 700; margin-left: 8px; }
+  .mini-btn{ font-family: inherit; font-size: 0.72rem; font-weight: 600; background: none; border: 1px solid #154565; color: #154565; padding: 4px 10px; cursor: pointer; border-radius: 8px; }
+  .mini-btn:hover{ background: #154565; color: #F4F7F8; }
+  .ep-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; margin: 8px 0 4px; }
+  .ep-pixel{
+    font-family: inherit; height: 28px; background: #FFFFFF; border: 1px solid #BFCFD9; cursor: pointer;
+    display:flex; align-items:center; justify-content:center; font-size: 0.68rem; font-weight: 600;
+    color: #526A7A; border-radius: 8px; padding: 0;
+  }
+  .ep-pixel.done{ background: #5EBAA3; border-color: #5EBAA3; color: #2E6E5D; }
+  .ep-pixel.do-nagrania{ border: 2px solid #CB704D; color: #B25A38; font-weight: 800; }
+  .ep-pixel.kolejny-odc{ background: #FBEEE8; }
+  .ep-pixel.luka{ background: #CB704D; border-color: #CB704D; color: #FFFFFF; }
+  .legenda{ display:flex; gap: 14px; flex-wrap: wrap; font-size: 0.68rem; color: #526A7A; margin-top: 4px; }
+  .legenda i{ display:inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; border: 1px solid #BFCFD9; }
+  .legenda i.lg-done{ background: #5EBAA3; border-color: #5EBAA3; }
+  .legenda i.lg-dn{ border: 2px solid #CB704D; }
+  .legenda i.lg-luka{ background: #CB704D; border-color: #CB704D; }
+  .legenda i.lg-pr{ background: #E8EEF2; border-style: dashed; }
+  .ep-pixel.przyszly{ background: #E8EEF2; border-style: dashed; color: #8AA0AE; cursor: default; }
+  .ep-pixel.brak-daty{ background: #E8EEF2; }
+
+  .toolbar-prawa{ display:flex; align-items:center; gap: 12px; }
+  .plus-btn{
+    font-family: inherit; font-weight: 700; font-size: 1.4rem; line-height: 1;
+    border: 2px solid #154565; background: #F4F7F8; color: #154565;
+    width: 40px; height: 36px; padding: 0 0 3px; cursor: pointer; border-radius: 8px;
+  }
+  .plus-btn:hover{ background: #154565; color: #F4F7F8; }
+  .dodaj-panel{
+    background: #E8EEF2; border: 1px solid #BFCFD9; border-radius: 10px; padding: 14px;
+    margin-bottom: 12px; grid-template-columns: 2fr 1fr 1fr; gap: 10px;
+  }
+  .dodaj-panel input{
+    font-family: inherit; font-size: 0.9rem; padding: 9px 10px; border: 1px solid #BFCFD9;
+    border-radius: 8px; background: #FFFFFF; color: #154565; min-width: 0;
+  }
+  .dodaj-panel input:focus{ outline: none; border-color: #4FA3DA; }
+  .dodaj-panel .szeroki{ grid-column: 1 / -1; }
+  .dodaj-przyciski{ display: flex; gap: 8px; }
+  .dodaj-zapisz{ font-family: inherit; font-weight: 700; font-size: 0.85rem; background: #4FA3DA; color: #F4F7F8; border: none; padding: 9px 18px; cursor: pointer; border-radius: 8px; }
+  .dodaj-zapisz:hover{ background: #154565; }
+  .dodaj-anuluj{ font-family: inherit; font-weight: 700; font-size: 0.85rem; background: none; color: #526A7A; border: 1px solid #BFCFD9; padding: 9px 18px; cursor: pointer; border-radius: 8px; }
+  .dodaj-anuluj:hover{ border-color: #154565; color: #154565; }
+
+  .link-btn{
+    font-family: inherit; font-weight: 600; font-size: 0.78rem; border: 1px solid #BFCFD9; color: #526A7A;
+    padding: 8px 12px; border-radius: 8px; text-decoration: none; background: none; white-space: nowrap;
+  }
+  .link-btn:hover{ border-color: #154565; color: #154565; }
+  .kropka{ color: #CB704D; }
+  nav a.active .kropka{ color: #F4B393; }
+  .location-btn{ position: relative; display: block; cursor: pointer; }
+  .location-btn.brak{ color: #526A7A; border-style: dashed; }
+  .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .zrodlo{ text-align: center; font-size: 0.7rem; color: #526A7A; margin-top: 24px; }
+  .zrodlo a{ color: inherit; }
 
   .card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
 
@@ -199,6 +277,10 @@
   }
   .reject-btn:hover{ border-color:#CB704D; color:#CB704D; }
   .reject-btn.confirm{ border-color:#CB704D; background:#CB704D; color:#F4F7F8; }
+  .tytul-edycja{
+    font-family: inherit; font-size: 0.85rem; padding: 8px 10px; border: 1px solid #4FA3DA; border-radius: 8px;
+    background: #FFFFFF; color: #154565; width: 230px; max-width: 100%;
+  }
   .info-tag{
     font-size:0.72rem; font-weight:600; padding:6px 9px; border:1px solid #4FA3DA;
     color:#2C7DB3; background:#E5EFF5; border-radius:8px;
@@ -218,9 +300,19 @@
 <div class="wrap">
   <div class="toolbar">
     <div></div>
-    <div class="count" id="licznik"></div>
+    <div class="toolbar-prawa"><a class="link-btn" href="https://github.com/quipsus/seriale-skrypty/actions/workflows/nowosci.yml" target="_blank" rel="noopener" title="Otwiera GitHub Actions - tam kliknij Run workflow">odśwież</a><div class="count" id="licznik"></div><button class="plus-btn" id="plus" title="dodaj ręcznie" aria-label="dodaj ręcznie">+</button></div>
   </div>
   <div class="komunikat" id="komunikat"></div>
+  <div class="dodaj-panel" id="dodaj-panel" style="display:none;">
+    <input type="text" id="dodaj-tytul" placeholder="tytuł (np. The Wire)">
+    <input type="text" id="dodaj-rok" placeholder="rok" inputmode="numeric" maxlength="4">
+    <input type="text" id="dodaj-kraj" placeholder="kraj (np. US)" maxlength="6">
+    <input type="text" id="dodaj-link" class="szeroki" placeholder="link do epguides (opcjonalnie)">
+    <div class="dodaj-przyciski szeroki">
+      <button class="dodaj-zapisz" id="dodaj-zapisz">dodaj</button>
+      <button class="dodaj-anuluj" id="dodaj-anuluj">anuluj</button>
+    </div>
+  </div>
   <div class="filtry" id="filtry"><div class="pager" id="pager-gora"></div></div>
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
@@ -240,31 +332,25 @@
   let strona = 1;
   let naglowekWczytany = false;
   let serialeMaPlakatTmdb = false;   // czy tabela Seriale ma już kolumnę plakat_tmdb
+  let serialeMaTvmazeId = false;     // czy tabela Seriale ma już kolumnę tvmaze_id
 
   function pad2(n){ return String(n).padStart(2, '0'); }
 
   let komunikatTimer = null;
-  function pokazKomunikat(tekst){
+  function pokazKomunikat(tekst, etykieta, funkcja){
     const el = document.getElementById('komunikat');
     el.textContent = tekst;
+    if(tekst && etykieta && funkcja){
+      const b = document.createElement('button');
+      b.className = 'mini-btn';
+      b.style.marginLeft = '10px';
+      b.textContent = etykieta;
+      b.addEventListener('click', () => { el.style.display = 'none'; funkcja(); });
+      el.appendChild(b);
+    }
     el.style.display = tekst ? 'block' : 'none';
     clearTimeout(komunikatTimer);
-    if(tekst) komunikatTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
-  }
-
-  // Przenosi rodzajnik na koniec ("The Wire" -> "Wire, The") i wycina rok w nawiasie,
-  // żeby tytuł pasował do formatu używanego w tabeli Seriale.
-  function doFormatuBazy(tytul){
-    let t = (tytul || '').trim();
-    let rok = null;
-    const m = /^(.*?)\s*\((\d{4})\)\s*$/.exec(t);
-    if(m && m[1].trim()){ t = m[1].trim(); rok = Number(m[2]); }
-    const a = /^(The|A|An)\s+(.+)$/i.exec(t);
-    if(a){
-      const art = a[1].charAt(0).toUpperCase() + a[1].slice(1).toLowerCase();
-      t = a[2].trim() + ', ' + art;
-    }
-    return { tytul: t, rokZNazwy: rok };
+    if(tekst) komunikatTimer = setTimeout(() => { el.style.display = 'none'; }, etykieta ? 10000 : 6000);
   }
 
   function znajdzWSerialach(tytul, rok){
@@ -278,12 +364,14 @@
   async function wczytajSeriale(){
     const tabela = await grist.docApi.fetchTable('Seriale');
     serialeMaPlakatTmdb = Boolean(tabela.plakat_tmdb);
+    serialeMaTvmazeId = Boolean(tabela.tvmaze_id);
     wszystkieRekordy = [];
     for(let i = 0; i < tabela.id.length; i++){
       wszystkieRekordy.push({
         id: tabela.id[i],
         tytul: tabela.tytul ? tabela.tytul[i] : '',
         rok: tabela.rok ? tabela.rok[i] : '',
+        status: tabela.status ? tabela.status[i] : '',
         dysk: tabela.dysk ? tabela.dysk[i] : '',
         rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
       });
@@ -351,15 +439,86 @@
     return n + ' sezonów';
   }
 
+  // ---- Ręczne dodawanie ("+"): krótki formularz nad listą ----
+  function doFormatuBazy(tytul){
+    // "The Wire" -> "Wire, The"; rok w nawiasie na końcu wycinamy do osobnego pola
+    let t = (tytul || '').trim();
+    let rok = null;
+    const m = /^(.*?)\s*\((\d{4})\)\s*$/.exec(t);
+    if(m && m[1].trim()){ t = m[1].trim(); rok = Number(m[2]); }
+    const a = /^(The|A|An)\s+(.+)$/i.exec(t);
+    if(a){
+      const art = a[1].charAt(0).toUpperCase() + a[1].slice(1).toLowerCase();
+      t = a[2].trim() + ', ' + art;
+    }
+    return { tytul: t, rokZNazwy: rok };
+  }
+
+  function przelaczPanel(pokaz){
+    const p = document.getElementById('dodaj-panel');
+    if(!p) return;
+    p.style.display = pokaz ? 'grid' : 'none';
+    if(pokaz){
+      const b = document.getElementById('blad');
+      if(b) b.innerHTML = '';
+      document.getElementById('dodaj-tytul').focus();
+    }
+  }
+
+  function odczytajFormularz(){
+    const wartosc = id => (document.getElementById(id).value || '').trim();
+    const rokTxt = wartosc('dodaj-rok');
+    const link = wartosc('dodaj-link');
+    return {
+      tytul: wartosc('dodaj-tytul'),
+      rok: /^\d{4}$/.test(rokTxt) ? Number(rokTxt) : null,
+      kraj: wartosc('dodaj-kraj').toUpperCase(),
+      link: /^https?:\/\//i.test(link) ? link : '',
+    };
+  }
+
+  function wyczyscFormularz(){
+    ['dodaj-tytul', 'dodaj-rok', 'dodaj-kraj', 'dodaj-link'].forEach(id => { document.getElementById(id).value = ''; });
+  }
+
+  function podepnijPanelDodawania(dodaj){
+    const plus = document.getElementById('plus');
+    if(!plus) return;
+    plus.addEventListener('click', () => {
+      przelaczPanel(document.getElementById('dodaj-panel').style.display === 'none');
+    });
+    document.getElementById('dodaj-anuluj').addEventListener('click', () => przelaczPanel(false));
+    const wyslij = async () => {
+      const d = odczytajFormularz();
+      if(!d.tytul){ pokazBlad('Wpisz tytuł.'); return; }
+      await dodaj(d);
+    };
+    document.getElementById('dodaj-zapisz').addEventListener('click', wyslij);
+    document.getElementById('dodaj-panel').addEventListener('keydown', ev => {
+      if(ev.key === 'Enter'){ ev.preventDefault(); wyslij(); }
+    });
+  }
+
+  // Tytuł jako link do strony serialu na epguides (jeśli jest link).
+  function tytulHtml(r){
+    const t = escapeHtml(r.tytul || '(bez tytułu)');
+    const l = (r.link_epguides || '').trim();
+    if(/^https?:\/\//i.test(l)) return '<a href="' + escapeHtml(l) + '" target="_blank" rel="noopener">' + t + '</a>';
+    return t;
+  }
+
   function fmtGb(gb){
     gb = Number(gb) || 0;
     return gb >= 1000 ? (gb / 1000).toFixed(1).replace('.', ',') + ' TB' : Math.round(gb) + ' GB';
   }
 
+  let liczbaNowosci = 0;   // ile pozycji czeka w tabeli Nowosci (kropka przy zakładce)
+
   function renderujNav(){
     document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
       '<a href="' + ADRES_STRON + z[1] + '" target="_top"' +
-      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) + '</a>'
+      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) +
+      (z[0] === 'nowości' && liczbaNowosci > 0 ? ' <span class="kropka" title="' + liczbaNowosci + ' do przejrzenia">●</span>' : '') + '</a>'
     ).join('');
   }
 
@@ -408,6 +567,13 @@
     } catch(e){
       dyskiDane = [];   // brak tabeli Dyski nie powinien blokować reszty widoku
     }
+    try{
+      const n = await grist.docApi.fetchTable('Nowosci');
+      liczbaNowosci = n.id.length;
+    } catch(e){
+      liczbaNowosci = 0;
+    }
+    renderujNav();
   }
 
   function renderujPager(liczbaStron){
@@ -425,6 +591,7 @@
 
   let nowosci = [];
   let oczekujeOdrzucenie = null;
+  let edytowanyId = null;          // pozycja, której tytuł właśnie poprawiasz przed dodaniem
 
   function dataPL(sekundy){
     if(typeof sekundy !== 'number' || !isFinite(sekundy)) return '—';
@@ -451,6 +618,8 @@
     const naStronie = pasujace.slice(start, start + NA_STRONE);
 
     document.getElementById('licznik').textContent = pasujace.length + ' do przejrzenia';
+    liczbaNowosci = nowosci.length;
+    renderujNav();
     renderujPager(liczbaStron);
 
     if(pasujace.length === 0){ pusto.style.display = 'block'; return; }
@@ -474,30 +643,38 @@
           (n.opis ? '<p class="desc">' + escapeHtml(n.opis) + '</p>' : '') +
         '</div>' +
         '<div class="btn-row">' +
-          '<button class="reject-btn' + (potwierdza ? ' confirm' : '') + '" data-akcja="odrzuc" data-id="' + n.id + '">' +
-            (potwierdza ? 'na pewno?' : 'odrzuć') + '</button>' +
-          (wBazie
-            ? '<span class="info-tag">już w bazie</span>'
-            : '<button class="add-btn" data-akcja="dodaj" data-id="' + n.id + '">+ dodaj</button>') +
+          (edytowanyId === n.id
+            ? '<input class="tytul-edycja" id="edycja-tytul" value="' + escapeHtml(doFormatuBazy(n.tytul).tytul) + '" aria-label="tytuł w bazie">' +
+              '<button class="add-btn" data-akcja="potwierdz" data-id="' + n.id + '">dodaj</button>' +
+              '<button class="reject-btn" data-akcja="anuluj-edycje" data-id="' + n.id + '">anuluj</button>'
+            : '<button class="reject-btn' + (potwierdza ? ' confirm' : '') + '" data-akcja="odrzuc" data-id="' + n.id + '">' +
+                (potwierdza ? 'na pewno?' : 'odrzuć') + '</button>' +
+              (wBazie
+                ? '<span class="info-tag">już w bazie</span>'
+                : '<button class="add-btn" data-akcja="dodaj" data-id="' + n.id + '">+ dodaj</button>')) +
         '</div>';
       lista.appendChild(el);
     });
+    const poleTytulu = document.getElementById('edycja-tytul');
+    if(poleTytulu){ poleTytulu.focus(); poleTytulu.select(); }
   }
 
-  async function dodaj(id){
+  async function dodaj(id, tytulReczny){
     const n = nowosci.find(x => x.id === id);
     if(!n) return;
-    const f = doFormatuBazy(n.tytul);
+    const f = doFormatuBazy((tytulReczny || '').trim() || n.tytul);
     const pola = polaKarty(n);
     pola.tytul = f.tytul;
     if(!pola.rok && f.rokZNazwy) pola.rok = f.rokZNazwy;
     pola.status = 'oczekiwany';
+    if(n.tvmaze_id && serialeMaTvmazeId) pola.tvmaze_id = n.tvmaze_id;   // dokładne dopasowanie do TVmaze od razu
     try{
       await grist.docApi.applyUserActions([
         ['AddRecord', 'Seriale', null, pola],
         ['RemoveRecord', 'Nowosci', id],
       ]);
       nowosci = nowosci.filter(x => x.id !== id);
+      edytowanyId = null;
       wszystkieRekordy.push({ id: -id, tytul: pola.tytul, rok: pola.rok || '', dysk: '', rozmiar_gb: 0 });
       pokazKomunikat('Dodano „' + pola.tytul + '” do seriali (status: oczekiwany).');
       renderuj();
@@ -506,16 +683,69 @@
     }
   }
 
+  async function cofnijOdrzucenie(n, odrzId){
+    if(!n) return;
+    const pola = { tytul: n.tytul, link_epguides: n.link_epguides || '', kraj: n.kraj || '', opis: n.opis || '' };
+    if(n.rok) pola.rok = n.rok;
+    if(typeof n.data_wykrycia === 'number') pola.data_wykrycia = n.data_wykrycia;
+    const akcje = [['AddRecord', 'Nowosci', null, pola]];
+    if(odrzId) akcje.push(['RemoveRecord', 'Odrzucone', odrzId]);
+    try{
+      await grist.docApi.applyUserActions(akcje);
+      await wczytajDane();
+      pokazKomunikat('Przywrócono „' + n.tytul + '”.');
+    } catch(e){
+      pokazBlad('Nie udało się cofnąć: ' + e.message);
+    }
+  }
+
   async function odrzuc(id){
     const n = nowosci.find(x => x.id === id);
+    const usun = ['RemoveRecord', 'Nowosci', id];
+    let odrzId = null;
     try{
-      await grist.docApi.applyUserActions([['RemoveRecord', 'Nowosci', id]]);
+      // Zapamiętujemy odrzucony link w tabeli Odrzucone, żeby skrypt epguides nie dodał go znowu.
+      if(n && n.link_epguides){
+        try{
+          const wynik = await grist.docApi.applyUserActions([['AddRecord', 'Odrzucone', null, { link: n.link_epguides }], usun]);
+          odrzId = (wynik && wynik.retValues && wynik.retValues[0]) || null;
+        } catch(e){
+          await grist.docApi.applyUserActions([usun]);   // tabeli Odrzucone jeszcze nie ma
+        }
+      } else {
+        await grist.docApi.applyUserActions([usun]);
+      }
       nowosci = nowosci.filter(x => x.id !== id);
       oczekujeOdrzucenie = null;
-      pokazKomunikat('Odrzucono „' + (n ? n.tytul : '') + '”.');
+      pokazKomunikat('Odrzucono „' + (n ? n.tytul : '') + '”.', 'cofnij', () => cofnijOdrzucenie(n, odrzId));
       renderuj();
     } catch(e){
       pokazBlad('Nie udało się odrzucić: ' + e.message);
+    }
+  }
+
+
+  async function dodajRecznie(d){
+    const f = doFormatuBazy(d.tytul);
+    const rok = d.rok || f.rokZNazwy;
+    const wBazie = znajdzWSerialach(d.tytul, rok);
+    if(wBazie){
+      pokazBlad('„' + f.tytul + '” jest już w bazie (status: ' + (wBazie.status || '—') + ').');
+      return;
+    }
+    const dzis = new Date();
+    const pola = { tytul: d.tytul, data_wykrycia: Date.UTC(dzis.getUTCFullYear(), dzis.getUTCMonth(), dzis.getUTCDate()) / 1000 };
+    if(rok) pola.rok = rok;
+    if(d.kraj) pola.kraj = d.kraj;
+    if(d.link) pola.link_epguides = d.link;
+    try{
+      await grist.docApi.applyUserActions([['AddRecord', 'Nowosci', null, pola]]);
+      przelaczPanel(false);
+      wyczyscFormularz();
+      pokazKomunikat('Dodano „' + d.tytul + '” do nowości.');
+      await wczytajDane();
+    } catch(e){
+      pokazBlad('Nie udało się dodać: ' + e.message);
     }
   }
 
@@ -533,6 +763,7 @@
           data_wykrycia: t.data_wykrycia ? t.data_wykrycia[i] : null,
           opis: t.opis ? t.opis[i] : '',
           plakat: t.plakat ? t.plakat[i] : null,
+          tvmaze_id: t.tvmaze_id ? t.tvmaze_id[i] : null,
         });
       }
       await wczytajNaglowek();
@@ -541,6 +772,13 @@
       pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
     }
   }
+
+  document.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Enter' && ev.target && ev.target.id === 'edycja-tytul' && edytowanyId !== null){
+      ev.preventDefault();
+      dodaj(edytowanyId, ev.target.value);
+    }
+  });
 
   document.addEventListener('click', (ev) => {
     const btn = ev.target.closest('button[data-akcja]');
@@ -554,7 +792,9 @@
     if(btn){
       const akcja = btn.dataset.akcja;
       const id = Number(btn.dataset.id);
-      if(akcja === 'dodaj'){ dodaj(id); }
+      if(akcja === 'dodaj'){ edytowanyId = id; renderuj(); }
+      else if(akcja === 'potwierdz'){ const p = document.getElementById('edycja-tytul'); dodaj(id, p ? p.value : ''); }
+      else if(akcja === 'anuluj-edycje'){ edytowanyId = null; renderuj(); }
       else if(akcja === 'odrzuc'){
         if(oczekujeOdrzucenie === id){ odrzuc(id); }
         else { oczekujeOdrzucenie = id; renderuj(); }
@@ -572,6 +812,7 @@
 
   renderujNav();
   renderujDyski();
+  podepnijPanelDodawania(dodajRecznie);
   grist.ready({ requiredAccess: 'full' });
   grist.onRecords(wczytajDane);
   wczytajDane();
