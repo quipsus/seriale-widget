@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Nowości — widget</title>
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{ color-scheme: light; }
+*{ box-sizing: border-box; }
+html{ background: #F4F7F8; color-scheme: light; }
+
+body{
+margin:0;
+background: #F4F7F8;
+color: #154565;
+font-family: ‘Inter’, Calibri, ‘Segoe UI’, Helvetica, Arial, sans-serif;
+line-height: 1.5;
+font-weight: 400;
+font-size: 14px;
+}
+
+/* ––––– nagłówek: tytuł, dyski, zakładki ––––– */
+header{
+padding: 16px 20px 14px;
+border-bottom: 2px solid #154565;
+display:flex; flex-direction:column; gap: 10px;
+}
+.header-row{
+display:flex; justify-content: space-between; align-items: flex-start;
+flex-wrap: wrap; gap: 16px 24px;
+}
+h1{
+font-weight: 800; font-size: 1.9rem; margin: 0;
+letter-spacing: -0.5px; color: #154565; line-height: 1.15;
+}
+nav{ display:flex; gap: 4px; flex-wrap: wrap; }
+nav a{
+font-weight: 600; font-size: 0.88rem;
+border: 2px solid #154565; color: #154565; background: none;
+padding: 8px 16px; cursor: pointer; border-radius: 8px;
+text-decoration: none; display:inline-block;
+}
+nav a.active{ background: #154565; color: #F4F7F8; }
+nav a:not(.active):hover{ background: #E8EEF2; }
+
+.disk-strip-bar{ display:flex; gap: 22px; flex-wrap: wrap; align-items:flex-start; }
+.disk-gauge{
+display:flex; flex-direction:column; gap: 4px;
+cursor: pointer; position: relative; min-width: 120px;
+}
+.disk-gauge-label{
+font-size: 0.72rem; font-weight: 700; color: #154565;
+display:flex; justify-content:space-between; align-items:baseline;
+}
+.disk-gauge-label span{ font-weight:500; color: #526A7A; font-size:0.68rem; }
+.filmstrip{
+display:flex; align-items:center; gap: 2px;
+background: #FFFFFF; border: 1px solid #BFCFD9; padding: 4px 5px; border-radius: 4px; position: relative;
+}
+.filmstrip::before, .filmstrip::after{
+content:””; position:absolute; left:5px; right:5px; height:3px;
+background-image: radial-gradient(circle, #BFCFD9 1.2px, transparent 1.4px);
+background-size: 8px 3px; background-repeat: repeat-x;
+}
+.filmstrip::before{ top: 1px; }
+.filmstrip::after{ bottom: 1px; }
+.filmstrip-frame{ flex: 1; height: 14px; background: #E8EEF2; border-radius: 1px; }
+.filmstrip-frame.filled.dysk0{ background: #5EBAA3; }
+.filmstrip-frame.filled.dysk1{ background: #4FA3DA; }
+.filmstrip-frame.filled.dysk2{ background: #8C7CC0; }
+.disk-gauge-detail{
+display:none; position:absolute; top: calc(100% + 8px); left: 0;
+background: #154565; color: #F4F7F8;
+font-size: 0.74rem; white-space: nowrap; padding: 6px 10px; border-radius: 6px; z-index: 5;
+}
+.disk-gauge-detail::after{
+content:””; position:absolute; bottom:100%; left: 18px;
+border: 5px solid transparent; border-bottom-color: #154565;
+}
+.disk-gauge.open .disk-gauge-detail{ display:block; }
+
+/* ––––– lista ––––– */
+.wrap{ padding: 16px 20px 60px; max-width: 1100px; margin: 0 auto; }
+
+.toolbar{
+display:flex; justify-content: space-between; align-items: center;
+margin-bottom: 12px; flex-wrap: wrap; gap: 12px;
+}
+.toolbar input[type=text]{
+font-family: inherit; font-size: 0.95rem; padding: 9px 12px;
+border: none; border-bottom: 2px solid #154565; border-radius: 8px 8px 0 0;
+background: transparent; width: 260px; color: #154565;
+}
+.toolbar input[type=text]:focus{ outline:none; border-bottom-color: #4FA3DA; }
+.count{ font-size: 0.8rem; color: #526A7A; }
+
+.filtry{ display:flex; justify-content: space-between; align-items:center; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.filtry-dol{ margin: 16px 0 0; justify-content: flex-end; }
+.chips{ display:flex; gap: 6px; flex-wrap: wrap; }
+.chip{
+font-family: inherit; font-weight: 600; font-size: 0.82rem;
+background: none; border: 2px solid #4FA3DA; color: #2C7DB3;
+padding: 7px 14px; cursor: pointer; border-radius: 8px;
+}
+.chip.active{ background: #4FA3DA; color: #F4F7F8; }
+.chip:not(.active):hover{ background: #E8EEF2; }
+
+.pager{ display:flex; align-items:center; gap: 8px; margin-left: auto; }
+.pager button{
+font-family: inherit; font-weight: 700; font-size: 1.3rem; line-height: 1;
+border: 2px solid #154565; background: #F4F7F8; color: #154565;
+width: 40px; height: 36px; padding: 0 0 3px; cursor: pointer; border-radius: 8px;
+}
+.pager button:hover:not(:disabled){ background: #154565; color: #F4F7F8; }
+.pager button:disabled{ opacity: 0.35; cursor: default; }
+.pager .info{ font-size: 0.85rem; color: #526A7A; min-width: 56px; text-align:center; }
+
+.cards{ display:flex; flex-direction:column; gap: 8px; }
+
+.card{
+display: grid; grid-template-columns: 76px 1fr 200px; gap: 20px;
+padding: 16px; align-items: start; position: relative; color: #154565;
+}
+.card:not(:first-child)::before{
+content:””; position: absolute; top: -4px; left: 16px; right: 16px;
+height: 1px; background: #BFCFD9;
+}
+.card:hover{ background: #E8EEF2; border-radius: 10px; }
+.card:hover::before, .card:hover + .card::before{ display:none; }
+
+.poster{
+width: 76px; height: 106px; border-radius: 8px;
+background-color: #154565;
+background-image: linear-gradient(150deg, #4FA3DA, #154565);
+display:flex; align-items:center; justify-content:center;
+color: #F4F7F8; font-weight: 800; font-size: 1.5rem; flex-shrink:0;
+}
+
+.card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
+.meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
+.desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
+
+.card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
+
+.tag{
+font-size: 0.72rem; font-weight: 600; padding: 6px 9px;
+border: 1px solid #154565; border-radius: 8px; width: 100%;
+text-align: center; box-sizing: border-box; cursor: pointer;
+background: none; font-family: inherit;
+}
+.tag.oczekiwany{ border-color: #8C7CC0; color: #564785; background: #EDEAF5; }
+.tag.emitowany{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
+.tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
+.tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
+.tag:hover{ filter: brightness(0.95); }
+.tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
+
+.location-btn{
+font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
+padding: 6px 9px; width: 100%; box-sizing: border-box; text-align: center;
+color: #154565; background: #F4F7F8;
+}
+
+.empty{ text-align:center; color: #526A7A; padding: 40px 0; font-size: 0.9rem; }
+.error{ background: #FBEEE8; border: 1px solid #CB704D; color: #B25A38; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
+
+.komunikat{ display:none; background:#E7F3F0; border:1px solid #5EBAA3; color:#2E6E5D; padding:10px 14px; margin-bottom:12px; font-size:0.85rem; border-radius:8px; }
+
+.list-item{
+display:grid; grid-template-columns: 90px 1fr auto; gap: 18px;
+padding: 16px; align-items:center; position: relative; color:#154565;
+}
+.list-item:not(:first-child)::before{
+content:””; position:absolute; top:-4px; left:16px; right:16px; height:1px; background:#BFCFD9;
+}
+.list-item:hover{ background:#E8EEF2; border-radius:10px; }
+.list-item:hover::before, .list-item:hover + .list-item::before{ display:none; }
+.list-date{ font-size:0.78rem; color:#526A7A; }
+.list-main h4{ margin:0 0 4px; font-weight:700; font-size:0.98rem; color:#154565; }
+.list-main h4 a{ color:inherit; text-decoration:none; }
+.list-main h4 a:hover{ text-decoration:underline; }
+.list-main .meta{ margin-bottom:0; }
+.btn-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.add-btn{
+font-family:inherit; font-weight:700; font-size:0.78rem;
+background:#4FA3DA; color:#F4F7F8; border:none; padding:9px 14px; cursor:pointer; border-radius:8px;
+}
+.add-btn:hover{ background:#154565; }
+.add-btn.confirm{ background:#CB704D; }
+.reject-btn{
+font-family:inherit; font-weight:700; font-size:0.78rem;
+background:none; color:#526A7A; border:1px solid #BFCFD9; padding:9px 14px; cursor:pointer; border-radius:8px;
+}
+.reject-btn:hover{ border-color:#CB704D; color:#CB704D; }
+.reject-btn.confirm{ border-color:#CB704D; background:#CB704D; color:#F4F7F8; }
+.info-tag{
+font-size:0.72rem; font-weight:600; padding:6px 9px; border:1px solid #4FA3DA;
+color:#2C7DB3; background:#E5EFF5; border-radius:8px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <h1>nowości</h1>
+    <div class="disk-strip-bar" id="dyski"></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div></div>
+    <div class="count" id="licznik"></div>
+  </div>
+  <div class="komunikat" id="komunikat"></div>
+  <div class="filtry" id="filtry"><div class="pager" id="pager-gora"></div></div>
+  <div id="blad"></div>
+  <div class="cards" id="lista"></div>
+  <div class="empty" id="pusto" style="display:none;">Brak nowości do przejrzenia.</div>
+  <div class="filtry filtry-dol"><div class="pager" id="pager-dol"></div></div>
+</div>
+
+<script>
+  const ADRES_STRON = 'https://docs.getgrist.com/5P3Ky8icnqM1/SERIALE/p/';
+  const ZAKLADKI = [['seriale', 2], ['archiwum', 5], ['nowości', 3], ['lista życzeń', 4]];
+  const AKTYWNA_ZAKLADKA = 'nowości';
+  const LICZBA_KLATEK = 6;
+  const NA_STRONE = 25;
+
+  let wszystkieRekordy = [];   // tabela Seriale (do wskaźników dysków i sprawdzania duplikatów)
+  let dyskiDane = [];
+  let strona = 1;
+  let naglowekWczytany = false;
+
+  function pad2(n){ return String(n).padStart(2, '0'); }
+
+  let komunikatTimer = null;
+  function pokazKomunikat(tekst){
+    const el = document.getElementById('komunikat');
+    el.textContent = tekst;
+    el.style.display = tekst ? 'block' : 'none';
+    clearTimeout(komunikatTimer);
+    if(tekst) komunikatTimer = setTimeout(() => { el.style.display = 'none'; }, 6000);
+  }
+
+  // Przenosi rodzajnik na koniec ("The Wire" -> "Wire, The") i wycina rok w nawiasie,
+  // żeby tytuł pasował do formatu używanego w tabeli Seriale.
+  function doFormatuBazy(tytul){
+    let t = (tytul || '').trim();
+    let rok = null;
+    const m = /^(.*?)\s*\((\d{4})\)\s*$/.exec(t);
+    if(m && m[1].trim()){ t = m[1].trim(); rok = Number(m[2]); }
+    const a = /^(The|A|An)\s+(.+)$/i.exec(t);
+    if(a){
+      const art = a[1].charAt(0).toUpperCase() + a[1].slice(1).toLowerCase();
+      t = a[2].trim() + ', ' + art;
+    }
+    return { tytul: t, rokZNazwy: rok };
+  }
+
+  function znajdzWSerialach(tytul, rok){
+    const f = doFormatuBazy(tytul);
+    const r = rok || f.rokZNazwy;
+    const t = f.tytul.toLowerCase();
+    return wszystkieRekordy.find(x =>
+      (x.tytul || '').toLowerCase() === t && (!r || !x.rok || Number(x.rok) === Number(r)));
+  }
+
+  async function wczytajSeriale(){
+    const tabela = await grist.docApi.fetchTable('Seriale');
+    wszystkieRekordy = [];
+    for(let i = 0; i < tabela.id.length; i++){
+      wszystkieRekordy.push({
+        id: tabela.id[i],
+        tytul: tabela.tytul ? tabela.tytul[i] : '',
+        rok: tabela.rok ? tabela.rok[i] : '',
+        dysk: tabela.dysk ? tabela.dysk[i] : '',
+        rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
+      });
+    }
+  }
+
+  async function wczytajNaglowek(){
+    if(naglowekWczytany) return;
+    try{ await wczytajSeriale(); } catch(e){ wszystkieRekordy = []; }
+    await wczytajDyski();
+    renderujDyski();
+    naglowekWczytany = true;
+  }
+
+  function polaKarty(r){
+    // Pola przenoszone do tabeli Seriale; plakat tylko jeśli istnieje.
+    const pola = { tytul: r.tytul, link_epguides: r.link_epguides || '', kraj: r.kraj || '', opis: r.opis || '' };
+    if(r.rok) pola.rok = r.rok;
+    if(Array.isArray(r.plakat)) pola.plakat = r.plakat;
+    return pola;
+  }
+
+  function escapeHtml(tekst){
+    const div = document.createElement('div');
+    div.textContent = tekst == null ? '' : String(tekst);
+    return div.innerHTML;
+  }
+
+  function pokazBlad(tresc){
+    document.getElementById('blad').innerHTML = '<div class="error">' + escapeHtml(tresc) + '</div>';
+  }
+
+  function inicjalTytulu(tytul){
+    return (tytul || '?').trim().charAt(0).toUpperCase();
+  }
+
+  // Liczba różnych sezonów w zapisie historii ("[✓] S01: 24 odc." itd.).
+  function liczbaSezonow(historia){
+    if(!historia) return 0;
+    const numery = new Set();
+    const re = /S(\d{1,3}):/g;
+    let m;
+    while((m = re.exec(historia)) !== null) numery.add(Number(m[1]));
+    return numery.size;
+  }
+
+  function odmianaSezonow(n){
+    if(n === 1) return '1 sezon';
+    const d = n % 10, dd = n % 100;
+    if(d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14)) return n + ' sezony';
+    return n + ' sezonów';
+  }
+
+  function fmtGb(gb){
+    gb = Number(gb) || 0;
+    return gb >= 1000 ? (gb / 1000).toFixed(1).replace('.', ',') + ' TB' : Math.round(gb) + ' GB';
+  }
+
+  function renderujNav(){
+    document.getElementById('nav').innerHTML = ZAKLADKI.map(z =>
+      '<a href="' + ADRES_STRON + z[1] + '" target="_top"' +
+      (z[0] === AKTYWNA_ZAKLADKA ? ' class="active"' : '') + '>' + escapeHtml(z[0]) + '</a>'
+    ).join('');
+  }
+
+  function renderujDyski(){
+    const nazwy = ['dysk_0', 'dysk_1', 'dysk_2'];
+    const html = nazwy.map((nazwa, indeks) => {
+      const wiersz = dyskiDane.find(d => d.dysk === nazwa) || {};
+      const pojemnosc = Number(wiersz.pojemnosc_gb) || 0;
+      const wolne = Number(wiersz.wolne_gb) || 0;
+      const wSerialach = wszystkieRekordy
+        .filter(r => r.dysk === nazwa)
+        .reduce((suma, r) => suma + (Number(r.rozmiar_gb) || 0), 0);
+
+      let procent = null, opis;
+      if(pojemnosc > 0){
+        procent = Math.max(0, Math.min(100, Math.round((pojemnosc - wolne) / pojemnosc * 100)));
+        opis = fmtGb(pojemnosc - wolne) + ' / ' + fmtGb(pojemnosc) + ' · ' + fmtGb(wolne) + ' wolne';
+      } else {
+        opis = 'brak danych o pojemności · seriale: ' + fmtGb(wSerialach);
+      }
+      const wypelnione = procent === null ? 0 : Math.round(procent / 100 * LICZBA_KLATEK);
+      let klatki = '';
+      for(let i = 0; i < LICZBA_KLATEK; i++){
+        klatki += '<div class="filmstrip-frame' + (i < wypelnione ? ' filled dysk' + indeks : '') + '"></div>';
+      }
+      return '<div class="disk-gauge">' +
+        '<div class="disk-gauge-label">' + nazwa + ' <span>' + (procent === null ? '—' : procent + '%') + '</span></div>' +
+        '<div class="filmstrip">' + klatki + '</div>' +
+        '<div class="disk-gauge-detail">' + escapeHtml(opis) + '</div>' +
+      '</div>';
+    }).join('');
+    document.getElementById('dyski').innerHTML = html;
+  }
+
+  async function wczytajDyski(){
+    try{
+      const t = await grist.docApi.fetchTable('Dyski');
+      dyskiDane = [];
+      for(let i = 0; i < t.id.length; i++){
+        dyskiDane.push({
+          dysk: t.dysk ? t.dysk[i] : '',
+          pojemnosc_gb: t.pojemnosc_gb ? t.pojemnosc_gb[i] : 0,
+          wolne_gb: t.wolne_gb ? t.wolne_gb[i] : 0,
+        });
+      }
+    } catch(e){
+      dyskiDane = [];   // brak tabeli Dyski nie powinien blokować reszty widoku
+    }
+  }
+
+  function renderujPager(liczbaStron){
+    const html = liczbaStron <= 1 ? '' :
+      '<button data-akcja="wstecz" aria-label="poprzednia strona"' + (strona <= 1 ? ' disabled' : '') + '>‹</button>' +
+      '<span class="info">' + strona + ' / ' + liczbaStron + '</span>' +
+      '<button data-akcja="dalej" aria-label="następna strona"' + (strona >= liczbaStron ? ' disabled' : '') + '>›</button>';
+    document.getElementById('pager-gora').innerHTML = html;
+    document.getElementById('pager-dol').innerHTML = html;
+    // widoki bez filtrów statusu: górny wiersz pokazujemy tylko wtedy, gdy są strzałki
+    const wiersz = document.getElementById('filtry');
+    if(wiersz && !document.getElementById('chips')) wiersz.style.display = html ? 'flex' : 'none';
+  }
+
+
+  let nowosci = [];
+  let oczekujeOdrzucenie = null;
+
+  function dataPL(sekundy){
+    if(typeof sekundy !== 'number' || !isFinite(sekundy)) return '—';
+    const d = new Date(sekundy * 1000);
+    return pad2(d.getUTCDate()) + '.' + pad2(d.getUTCMonth() + 1) + '.' + d.getUTCFullYear();
+  }
+
+  function renderuj(){
+    const lista = document.getElementById('lista');
+    const pusto = document.getElementById('pusto');
+    lista.innerHTML = '';
+
+    const pasujace = nowosci.slice().sort((a, b) => {
+      const da = typeof a.data_wykrycia === 'number' ? a.data_wykrycia : -Infinity;
+      const db = typeof b.data_wykrycia === 'number' ? b.data_wykrycia : -Infinity;
+      if(db !== da) return db - da;
+      return (a.tytul || '').localeCompare(b.tytul || '', 'pl');
+    });
+
+    const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
+    if(strona > liczbaStron) strona = liczbaStron;
+    if(strona < 1) strona = 1;
+    const start = (strona - 1) * NA_STRONE;
+    const naStronie = pasujace.slice(start, start + NA_STRONE);
+
+    document.getElementById('licznik').textContent = pasujace.length + ' do przejrzenia';
+    renderujPager(liczbaStron);
+
+    if(pasujace.length === 0){ pusto.style.display = 'block'; return; }
+    pusto.style.display = 'none';
+
+    naStronie.forEach(n => {
+      const wBazie = znajdzWSerialach(n.tytul, n.rok);
+      const el = document.createElement('div');
+      el.className = 'list-item';
+
+      const tytulHtml = n.link_epguides
+        ? '<a href="' + escapeHtml(n.link_epguides) + '" target="_blank" rel="noopener">' + escapeHtml(n.tytul || '(bez tytułu)') + '</a>'
+        : escapeHtml(n.tytul || '(bez tytułu)');
+      const meta = [n.rok, n.kraj].filter(Boolean).join(' · ');
+      const potwierdza = oczekujeOdrzucenie === n.id;
+
+      el.innerHTML =
+        '<div class="list-date">' + escapeHtml(dataPL(n.data_wykrycia)) + '</div>' +
+        '<div class="list-main"><h4>' + tytulHtml + '</h4>' +
+          '<div class="meta">' + escapeHtml(meta) + '</div>' +
+          (n.opis ? '<p class="desc">' + escapeHtml(n.opis) + '</p>' : '') +
+        '</div>' +
+        '<div class="btn-row">' +
+          '<button class="reject-btn' + (potwierdza ? ' confirm' : '') + '" data-akcja="odrzuc" data-id="' + n.id + '">' +
+            (potwierdza ? 'na pewno?' : 'odrzuć') + '</button>' +
+          (wBazie
+            ? '<span class="info-tag">już w bazie</span>'
+            : '<button class="add-btn" data-akcja="dodaj" data-id="' + n.id + '">+ dodaj</button>') +
+        '</div>';
+      lista.appendChild(el);
+    });
+  }
+
+  async function dodaj(id){
+    const n = nowosci.find(x => x.id === id);
+    if(!n) return;
+    const f = doFormatuBazy(n.tytul);
+    const pola = polaKarty(n);
+    pola.tytul = f.tytul;
+    if(!pola.rok && f.rokZNazwy) pola.rok = f.rokZNazwy;
+    pola.status = 'oczekiwany';
+    try{
+      await grist.docApi.applyUserActions([
+        ['AddRecord', 'Seriale', null, pola],
+        ['RemoveRecord', 'Nowosci', id],
+      ]);
+      nowosci = nowosci.filter(x => x.id !== id);
+      wszystkieRekordy.push({ id: -id, tytul: pola.tytul, rok: pola.rok || '', dysk: '', rozmiar_gb: 0 });
+      pokazKomunikat('Dodano „' + pola.tytul + '” do seriali (status: oczekiwany).');
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się dodać: ' + e.message);
+    }
+  }
+
+  async function odrzuc(id){
+    const n = nowosci.find(x => x.id === id);
+    try{
+      await grist.docApi.applyUserActions([['RemoveRecord', 'Nowosci', id]]);
+      nowosci = nowosci.filter(x => x.id !== id);
+      oczekujeOdrzucenie = null;
+      pokazKomunikat('Odrzucono „' + (n ? n.tytul : '') + '”.');
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się odrzucić: ' + e.message);
+    }
+  }
+
+  async function wczytajDane(){
+    try{
+      const t = await grist.docApi.fetchTable('Nowosci');
+      nowosci = [];
+      for(let i = 0; i < t.id.length; i++){
+        nowosci.push({
+          id: t.id[i],
+          tytul: t.tytul ? t.tytul[i] : '',
+          link_epguides: t.link_epguides ? t.link_epguides[i] : '',
+          rok: t.rok ? t.rok[i] : '',
+          kraj: t.kraj ? t.kraj[i] : '',
+          data_wykrycia: t.data_wykrycia ? t.data_wykrycia[i] : null,
+          opis: t.opis ? t.opis[i] : '',
+          plakat: t.plakat ? t.plakat[i] : null,
+        });
+      }
+      await wczytajNaglowek();
+      renderuj();
+    } catch(e){
+      pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
+    }
+  }
+
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-akcja]');
+    const dysk = ev.target.closest('.disk-gauge');
+
+    if(oczekujeOdrzucenie !== null && !(btn && btn.dataset.akcja === 'odrzuc' && Number(btn.dataset.id) === oczekujeOdrzucenie)){
+      oczekujeOdrzucenie = null;
+      renderuj();
+    }
+
+    if(btn){
+      const akcja = btn.dataset.akcja;
+      const id = Number(btn.dataset.id);
+      if(akcja === 'dodaj'){ dodaj(id); }
+      else if(akcja === 'odrzuc'){
+        if(oczekujeOdrzucenie === id){ odrzuc(id); }
+        else { oczekujeOdrzucenie = id; renderuj(); }
+      }
+      else if(akcja === 'wstecz' || akcja === 'dalej'){
+        if(!btn.disabled){ strona += (akcja === 'dalej') ? 1 : -1; renderuj(); window.scrollTo(0, 0); }
+      }
+      return;
+    }
+
+    const bylOtwarty = dysk && dysk.classList.contains('open');
+    document.querySelectorAll('.disk-gauge.open').forEach(g => g.classList.remove('open'));
+    if(dysk && !bylOtwarty) dysk.classList.add('open');
+  });
+
+  renderujNav();
+  renderujDyski();
+  grist.ready({ requiredAccess: 'full' });
+  grist.onRecords(wczytajDane);
+  wczytajDane();
+</script>
+
+</body>
+</html>
