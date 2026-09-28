@@ -139,7 +139,9 @@ background-color: #154565;
 background-image: linear-gradient(150deg, #4FA3DA, #154565);
 display:flex; align-items:center; justify-content:center;
 color: #F4F7F8; font-weight: 800; font-size: 1.5rem; flex-shrink:0;
+position: relative; overflow: hidden;
 }
+.poster img{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; display:block; }
 
 .card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
 .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
@@ -326,6 +328,40 @@ background:#4FA3DA; color:#F4F7F8; border:none; padding:9px 14px; cursor:pointer
 
   function inicjalTytulu(tytul){
     return (tytul || '?').trim().charAt(0).toUpperCase();
+  }
+
+  // ---- Plakaty: załączniki Grista wczytywane z krótkotrwałym tokenem (bez kluczy w kodzie) ----
+  let tokenInfo = null;
+  let tokenTimer = null;
+
+  async function odswiezToken(){
+    try{
+      const t = await grist.docApi.getAccessToken({ readOnly: true });
+      tokenInfo = { token: t.token, baseUrl: t.baseUrl };
+      const ttl = Number(t.ttlMsecs) || 300000;
+      clearTimeout(tokenTimer);
+      tokenTimer = setTimeout(odswiezToken, Math.max(30000, ttl * 0.5));
+    } catch(e){
+      tokenInfo = null;
+    }
+  }
+
+  function plakatId(wartosc){
+    if(!Array.isArray(wartosc)) return null;
+    const liczby = wartosc.filter(x => typeof x === 'number');
+    return liczby.length ? liczby[0] : null;
+  }
+
+  // Plakietka z literą jako tło; jeśli jest plakat i token, obraz przykrywa literę.
+  function plakatHtml(r){
+    const litera = escapeHtml(inicjalTytulu(r.tytul));
+    const id = plakatId(r.plakat);
+    if(id !== null && tokenInfo){
+      const adres = tokenInfo.baseUrl + '/attachments/' + id + '/download?auth=' + tokenInfo.token;
+      return '<div class="poster"><span>' + litera + '</span><img src="' + escapeHtml(adres) +
+             '" alt="" loading="lazy" onerror="this.remove()"></div>';
+    }
+    return '<div class="poster"><span>' + litera + '</span></div>';
   }
 
   // Liczba różnych sezonów w zapisie historii ("[✓] S01: 24 odc." itd.).
@@ -577,7 +613,7 @@ background:#4FA3DA; color:#F4F7F8; border:none; padding:9px 14px; cursor:pointer
       el.className = 'zyczenie';
       el.innerHTML =
         '<div class="zyczenie-top">' +
-          '<div class="poster">' + escapeHtml(inicjalTytulu(r.tytul)) + '</div>' +
+          plakatHtml(r) +
           '<div class="card-main">' +
             '<h3>' + escapeHtml(r.tytul || '(bez tytułu)') + '</h3>' +
             '<div class="meta">' + escapeHtml(metaCzesci.join(' · ')) + '</div>' +
@@ -655,6 +691,7 @@ background:#4FA3DA; color:#F4F7F8; border:none; padding:9px 14px; cursor:pointer
         });
       }
       await wczytajNaglowek();
+      if(!tokenInfo) await odswiezToken();
       renderuj();
     } catch(e){
       pokazBlad('Nie udało się wczytać danych z Grista: ' + e.message);
