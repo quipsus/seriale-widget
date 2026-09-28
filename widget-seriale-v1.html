@@ -4,32 +4,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>Seriale — widget</title>
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root{
-–bg: #F4F7F8;
-–bg-alt: #E8EEF2;
-–ink: #154565;
-–ink-soft: #526A7A;
-–sea: #4FA3DA;
-–mint: #5EBAA3;
-–mint-bg: #E7F3F0;
-–mint-ink: #2E6E5D;
-–warn: #CB704D;
-–line: #BFCFD9;
-–violet: #8C7CC0;
-}
+  :root{
+    color-scheme: light;
+    --s-bg: #F4F7F8;
+    --s-bg-alt: #E8EEF2;
+    --s-ink: #154565;
+    --s-ink-soft: #526A7A;
+    --s-sea: #4FA3DA;
+    --s-mint: #5EBAA3;
+    --s-mint-bg: #E7F3F0;
+    --s-mint-ink: #2E6E5D;
+    --s-warn: #CB704D;
+    --s-line: #BFCFD9;
+    --s-violet: #8C7CC0;
+  }
 
 *{ box-sizing: border-box; }
 
+html{ background: #F4F7F8; color-scheme: light; }
+
 body{
 margin:0;
-background: var(–bg);
-color: var(–ink);
-font-family: ‘Inter’, Calibri, sans-serif;
+background: #F4F7F8;
+color: #154565;
+font-family: Calibri, ‘Segoe UI’, Helvetica, Arial, sans-serif;
 line-height: 1.5;
 font-weight: 400;
 font-size: 14px;
@@ -39,17 +41,30 @@ font-size: 14px;
 
 .toolbar{
 display:flex; justify-content: space-between; align-items: center;
-margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+margin-bottom: 12px; flex-wrap: wrap; gap: 12px;
 }
 .toolbar input[type=text]{
-font-family: ‘Inter’, sans-serif;
+font-family: inherit;
 font-size: 0.95rem;
 padding: 9px 12px;
-border: none; border-bottom: 2px solid var(–ink);
-background: transparent; width: 260px; color: var(–ink);
+border: none; border-bottom: 2px solid #154565;
+background: transparent; width: 260px; color: #154565;
 }
-.toolbar input[type=text]:focus{ outline:none; border-bottom-color: var(–sea); }
-.count{ font-size: 0.8rem; color: var(–ink-soft); }
+.toolbar input[type=text]:focus{ outline:none; border-bottom-color: #4FA3DA; }
+.count{ font-size: 0.8rem; color: #526A7A; }
+
+.pager{
+display:flex; justify-content:center; align-items:center; gap: 12px;
+margin: 8px 0 12px;
+}
+.pager button{
+font-family: inherit; font-weight: 600; font-size: 0.85rem;
+border: 2px solid #154565; background: #F4F7F8; color: #154565;
+padding: 8px 16px; cursor: pointer; border-radius: 8px;
+}
+.pager button:hover:not(:disabled){ background: #154565; color: #F4F7F8; }
+.pager button:disabled{ opacity: 0.35; cursor: default; }
+.pager .info{ font-size: 0.85rem; color: #526A7A; min-width: 110px; text-align:center; }
 
 .cards{ display:flex; flex-direction:column; gap: 8px; }
 
@@ -60,68 +75,62 @@ gap: 20px;
 padding: 16px;
 align-items: start;
 position: relative;
+color: #154565;
 }
 .card:not(:first-child)::before{
 content:””;
 position: absolute;
 top: -4px; left: 16px; right: 16px;
 height: 1px;
-background: var(–line);
+background: #BFCFD9;
 }
-.card:hover{ background: var(–bg-alt); border-radius: 10px; }
+.card:hover{ background: #E8EEF2; border-radius: 10px; }
 .card:hover::before, .card:hover + .card::before{ display:none; }
 
 .poster{
 width: 76px; height: 106px;
-background: linear-gradient(150deg, var(–sea), var(–ink));
+background-color: #154565;
+background-image: linear-gradient(150deg, #4FA3DA, #154565);
 display:flex; align-items:center; justify-content:center;
-color: var(–bg); font-family:‘Inter’,sans-serif; font-weight: 800; font-size: 1.5rem;
+color: #F4F7F8; font-weight: 800; font-size: 1.5rem;
 flex-shrink:0;
 }
 
-.card-main h3{ font-family:‘Inter’,sans-serif; font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; }
-.meta{ font-size: 0.8rem; color: var(–ink-soft); margin-bottom: 8px; }
-.desc{ font-size: 0.87rem; color: var(–ink-soft); max-width: 58ch; margin: 0; }
+.card-main h3{ font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; color: #154565; }
+.meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
+.desc{ font-size: 0.87rem; color: #526A7A; max-width: 58ch; margin: 0; }
 
 .card-side{ text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap: 8px; }
 
 .tag{
 font-size: 0.72rem; font-weight: 600;
 padding: 6px 9px;
-border: 1px solid var(–ink);
+border: 1px solid #154565;
 border-radius: 8px;
 width: 100%;
 text-align: center;
 box-sizing: border-box;
 cursor: pointer;
 background: none;
-font-family: ‘Inter’, sans-serif;
+font-family: inherit;
 }
-.tag.oczekiwany{ border-color: var(–violet); color: #564785; background: #EDEAF5; }
-.tag.emitowany{ border-color: var(–mint); color: var(–mint-ink); background: var(–mint-bg); }
-.tag.kompletny{ border-color: var(–sea); color: var(–sea); background: #E5EFF5; }
-.tag.niekompletny{ border-color: var(–warn); color: var(–warn); background: #FBEEE8; }
+.tag.oczekiwany{ border-color: #8C7CC0; color: #564785; background: #EDEAF5; }
+.tag.emitowany{ border-color: #5EBAA3; color: #2E6E5D; background: #E7F3F0; }
+.tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
+.tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
 .tag:hover{ filter: brightness(0.95); }
-.tag-hint{ font-size: 0.62rem; color: var(–ink-soft); margin-top: -4px; }
+.tag-hint{ font-size: 0.62rem; color: #526A7A; margin-top: -4px; }
 
 .location-btn{
-font-family:‘Inter’,sans-serif; font-weight: 600; font-size: 0.72rem;
-border: 1px solid var(–ink); border-radius: 8px;
+font-weight: 600; font-size: 0.72rem;
+border: 1px solid #154565; border-radius: 8px;
 padding: 6px 9px; width: 100%; box-sizing: border-box;
 text-align: center;
-color: var(–ink); background: var(–bg);
+color: #154565; background: #F4F7F8;
 }
 
-.empty{ text-align:center; color: var(–ink-soft); padding: 40px 0; font-size: 0.9rem; }
-.error{ background: #FBEEE8; border: 1px solid var(–warn); color: var(–warn); padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
-
-.wiecej-btn{
-display:block; margin: 20px auto 0;
-font-family:‘Inter’,sans-serif; font-weight: 600; font-size: 0.85rem;
-border: 2px solid var(–ink); background: var(–bg); color: var(–ink);
-padding: 10px 20px; cursor: pointer; border-radius: 8px;
-}
-.wiecej-btn:hover{ background: var(–ink); color: var(–bg); }
+.empty{ text-align:center; color: #526A7A; padding: 40px 0; font-size: 0.9rem; }
+.error{ background: #FBEEE8; border: 1px solid #CB704D; color: #B25A38; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; }
 </style>
 
 </head>
@@ -132,86 +141,30 @@ padding: 10px 20px; cursor: pointer; border-radius: 8px;
     <input type="text" id="szukaj" placeholder="szukaj tytułu…">
     <div class="count" id="licznik"></div>
   </div>
+  <div class="pager" id="pager-gora"></div>
   <div id="blad"></div>
   <div class="cards" id="lista"></div>
   <div class="empty" id="pusto" style="display:none;">Brak seriali pasujących do wyszukiwania.</div>
-  <button class="wiecej-btn" id="wiecej" style="display:none;">Pokaż kolejne 50</button>
+  <div class="pager" id="pager-dol"></div>
 </div>
 
 <script>
   // ---- Konfiguracja ----
-  // Statusy pokazywane w tym widoku (widok "seriale" = w trakcie / czekające).
-  // Zmień na ['kompletny', 'niekompletny'], żeby ten sam widget użyć jako "archiwum".
+  // Widok "seriale" = w trakcie / czekające.
   const STATUSY_W_WIDOKU = ['oczekiwany', 'emitowany'];
-
-  // Kolejność klikania w tag statusu (cykliczne przełączanie) — ograniczona do sensownych
-  // przejść w obrębie tego widoku, żeby nie dało się przypadkiem "zgubić" serialu
-  // przenosząc go do kompletny/niekompletny stąd (to robimy w Griście świadomie).
+  // Klik w tag przełącza tylko w obrębie tego widoku (żeby nie "zgubić" serialu).
   const KOLEJNOSC_STATUSOW = ['oczekiwany', 'emitowany'];
 
+  const NA_STRONE = 25;
   let wszystkieRekordy = [];
-  const PORCJA = 50;
-  let ileWidocznych = PORCJA;
+  let strona = 1;
 
   function pokazBlad(tresc){
-    document.getElementById('blad').innerHTML =
-      `<div class="error">${tresc}</div>`;
+    document.getElementById('blad').innerHTML = '<div class="error">' + escapeHtml(tresc) + '</div>';
   }
 
   function inicjalTytulu(tytul){
     return (tytul || '?').trim().charAt(0).toUpperCase();
-  }
-
-  function renderuj(){
-    const fraza = document.getElementById('szukaj').value.trim().toLowerCase();
-    const lista = document.getElementById('lista');
-    const pusto = document.getElementById('pusto');
-    const wiecejBtn = document.getElementById('wiecej');
-    lista.innerHTML = '';
-
-    const pasujace = wszystkieRekordy
-      .filter(r => STATUSY_W_WIDOKU.includes(r.status))
-      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
-      .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
-
-    const przefiltrowane = pasujace.slice(0, ileWidocznych);
-
-    document.getElementById('licznik').textContent =
-      przefiltrowane.length + ' z ' + pasujace.length + ' pozycji';
-
-    if(pasujace.length === 0){
-      pusto.style.display = 'block';
-      wiecejBtn.style.display = 'none';
-      return;
-    }
-    pusto.style.display = 'none';
-    wiecejBtn.style.display = (pasujace.length > przefiltrowane.length) ? 'block' : 'none';
-
-    przefiltrowane.forEach(r => {
-      const karta = document.createElement('div');
-      karta.className = 'card';
-
-      const metaCzesci = [r.rok, r.kraj].filter(Boolean);
-
-      karta.innerHTML = `
-        <div class="poster">${inicjalTytulu(r.tytul)}</div>
-        <div class="card-main">
-          <h3>${escapeHtml(r.tytul || '(bez tytułu)')}</h3>
-          <div class="meta">${escapeHtml(metaCzesci.join(' · '))}</div>
-          <p class="desc">${escapeHtml(r.opis || '')}</p>
-        </div>
-        <div class="card-side">
-          <button class="tag ${escapeHtml(r.status || '')}" data-id="${r.id}">${escapeHtml(r.status || '—')}</button>
-          <div class="tag-hint">kliknij, by zmienić</div>
-          ${r.dysk || r.rozmiar_gb ? `<div class="location-btn">${escapeHtml(r.dysk || '—')}${r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : ''}</div>` : ''}
-        </div>
-      `;
-      lista.appendChild(karta);
-    });
-
-    document.querySelectorAll('.tag[data-id]').forEach(btn => {
-      btn.addEventListener('click', onKlikStatus);
-    });
   }
 
   function escapeHtml(tekst){
@@ -220,8 +173,72 @@ padding: 10px 20px; cursor: pointer; border-radius: 8px;
     return div.innerHTML;
   }
 
-  async function onKlikStatus(ev){
-    const btn = ev.currentTarget;
+  function renderujPager(liczbaStron){
+    const html = liczbaStron <= 1 ? '' :
+      '<button data-akcja="wstecz"' + (strona <= 1 ? ' disabled' : '') + '>‹ poprzednia</button>' +
+      '<span class="info">strona ' + strona + ' z ' + liczbaStron + '</span>' +
+      '<button data-akcja="dalej"' + (strona >= liczbaStron ? ' disabled' : '') + '>następna ›</button>';
+    document.getElementById('pager-gora').innerHTML = html;
+    document.getElementById('pager-dol').innerHTML = html;
+  }
+
+  function renderuj(){
+    const fraza = document.getElementById('szukaj').value.trim().toLowerCase();
+    const lista = document.getElementById('lista');
+    const pusto = document.getElementById('pusto');
+    lista.innerHTML = '';
+
+    const pasujace = wszystkieRekordy
+      .filter(r => STATUSY_W_WIDOKU.includes(r.status))
+      .filter(r => !fraza || (r.tytul || '').toLowerCase().includes(fraza))
+      .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
+
+    const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
+    if(strona > liczbaStron) strona = liczbaStron;
+    if(strona < 1) strona = 1;
+
+    const start = (strona - 1) * NA_STRONE;
+    const naStronie = pasujace.slice(start, start + NA_STRONE);
+
+    document.getElementById('licznik').textContent = pasujace.length === 0
+      ? '0 pozycji'
+      : (start + 1) + '–' + (start + naStronie.length) + ' z ' + pasujace.length;
+
+    renderujPager(liczbaStron);
+
+    if(pasujace.length === 0){
+      pusto.style.display = 'block';
+      return;
+    }
+    pusto.style.display = 'none';
+
+    naStronie.forEach(r => {
+      const karta = document.createElement('div');
+      karta.className = 'card';
+
+      const metaCzesci = [r.rok, r.kraj].filter(Boolean);
+      const historiaHtml = '';
+
+      karta.innerHTML =
+        '<div class="poster">' + escapeHtml(inicjalTytulu(r.tytul)) + '</div>' +
+        '<div class="card-main">' +
+          '<h3>' + escapeHtml(r.tytul || '(bez tytułu)') + '</h3>' +
+          '<div class="meta">' + escapeHtml(metaCzesci.join(' · ')) + '</div>' +
+          '<p class="desc">' + escapeHtml(r.opis || '') + '</p>' +
+          historiaHtml +
+        '</div>' +
+        '<div class="card-side">' +
+          '<button class="tag ' + escapeHtml(r.status || '') + '" data-id="' + r.id + '">' + escapeHtml(r.status || '—') + '</button>' +
+          '<div class="tag-hint">kliknij, by zmienić</div>' +
+          ((r.dysk || r.rozmiar_gb)
+            ? '<div class="location-btn">' + escapeHtml(r.dysk || '—') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') + '</div>'
+            : '') +
+        '</div>';
+      lista.appendChild(karta);
+    });
+  }
+
+  async function onKlikStatus(btn){
     const id = Number(btn.dataset.id);
     const rekord = wszystkieRekordy.find(r => r.id === id);
     if(!rekord) return;
@@ -265,18 +282,25 @@ padding: 10px 20px; cursor: pointer; border-radius: 8px;
     }
   }
 
-  grist.ready({ requiredAccess: 'full' });
-  grist.onRecords(wczytajDane);
-  document.getElementById('szukaj').addEventListener('input', () => {
-    ileWidocznych = PORCJA;
-    renderuj();
+  // Jedna obsługa kliknięć dla całej strony (zamiast osobnych na każdej karcie).
+  document.addEventListener('click', (ev) => {
+    const tag = ev.target.closest('.tag[data-id]');
+    if(tag){ onKlikStatus(tag); return; }
+    const pagerBtn = ev.target.closest('.pager button[data-akcja]');
+    if(pagerBtn && !pagerBtn.disabled){
+      strona += (pagerBtn.dataset.akcja === 'dalej') ? 1 : -1;
+      renderuj();
+      window.scrollTo(0, 0);
+    }
   });
-  document.getElementById('wiecej').addEventListener('click', () => {
-    ileWidocznych += PORCJA;
+
+  document.getElementById('szukaj').addEventListener('input', () => {
+    strona = 1;
     renderuj();
   });
 
-  // Pierwsze wczytanie, gdyby onRecords nie odpalił się od razu.
+  grist.ready({ requiredAccess: 'full' });
+  grist.onRecords(wczytajDane);
   wczytajDane();
 </script>
 
