@@ -10,7 +10,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root{ color-scheme: light; –linie-opisu: 3; }   /* ile linii opisu widać na karcie */
+:root{ color-scheme: light; }
 *{ box-sizing: border-box; }
 html{ background: #F4F7F8; color-scheme: light; }
 
@@ -148,7 +148,7 @@ position: relative; overflow: hidden;
 .meta{ font-size: 0.8rem; color: #526A7A; margin-bottom: 8px; }
 .desc{
 font-size: 0.87rem; color: #526A7A; max-width: 72ch; margin: 0; cursor: pointer;
-display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(–linie-opisu); line-clamp: var(–linie-opisu); overflow: hidden;
+display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
 }
 .desc.rozwiniete{ display: block; -webkit-line-clamp: unset; line-clamp: unset; overflow: visible; }
 .card-main{ min-height: 118px; min-width: 0; }
