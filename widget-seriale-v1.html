@@ -221,6 +221,12 @@ padding: 8px 12px; border-radius: 8px; text-decoration: none; background: none; 
 nav a.active .kropka{ color: #F4B393; }
 .location-btn{ position: relative; display: block; cursor: pointer; }
 .location-btn.brak{ color: #526A7A; border-style: dashed; }
+.usun-btn{
+font-family: inherit; font-size: 0.68rem; background: none; border: none;
+color: #8AA0AE; cursor: pointer; padding: 2px 4px; margin-top: 2px;
+}
+.usun-btn:hover{ color: #CB704D; text-decoration: underline; }
+.usun-btn.confirm{ color: #CB704D; font-weight: 700; }
 .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
 .obejrzane-row{ display:flex; align-items:center; gap: 6px; flex-wrap: wrap; margin: 10px 0 2px; }
 .obej-etykieta{ font-size: 0.74rem; font-weight: 700; color: #154565; margin-right: 4px; }
@@ -327,6 +333,7 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
   let strona = 1;
   let filtrStatusu = 'wszystkie';
   let filtrObejrzenia = 'wszystkie';   // 'wszystkie' | 'do' (nieobejrzane) | 'ob' (obejrzane)
+  let usunPotwierdzId = null;          // id serialu czekającego na drugi klik "usuń"
   let mamObejrzane = false;             // czy tabela Seriale ma już kolumnę obejrzane
 
   function escapeHtml(tekst){
@@ -363,7 +370,7 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
   function liczbaSezonow(historia){
     if(!historia) return 0;
     const numery = new Set();
-    const re = /S(\d{1,3}):/g;
+    const re = /S(\d{1,3})(?:\s*\(\d{4}\))?:/g;
     let m;
     while((m = re.exec(historia)) !== null) numery.add(Number(m[1]));
     return numery.size;
@@ -612,6 +619,8 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
             '<select class="dysk-wybor" data-id="' + r.id + '" aria-label="dysk">' +
               ['', 'dysk_0', 'dysk_1', 'dysk_2'].map(o => '<option value="' + o + '"' + (o === (r.dysk || '') ? ' selected' : '') + '>' + (o || '— brak —') + '</option>').join('') +
             '</select></label>' +
+          '<button class="usun-btn' + (usunPotwierdzId === r.id ? ' confirm' : '') + '" data-usun="' + r.id + '">' +
+            (usunPotwierdzId === r.id ? 'na pewno?' : 'usuń') + '</button>' +
         '</div>' + dolHtml;
       lista.appendChild(karta);
     });
@@ -705,23 +714,31 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
 
   function najwSezonHistorii(tekst){
     let max = 0;
-    const re = /S(\d{1,3}):/g;
+    const re = /S(\d{1,3})(?:\s*\(\d{4}\))?:/g;
     let m;
     while((m = re.exec(tekst || '')) !== null) max = Math.max(max, Number(m[1]));
     return max;
   }
 
   // Wpisuje sezon do historii jako ukończony (zmienia liczbę w istniejącej linii albo dopisuje nową).
-  function ustawSezonWHistorii(tekst, nr, ile){
+  function ustawSezonWHistorii(tekst, nr, ile, rok){
     const linie = (tekst || '').trim() ? tekst.replace(/\s+$/, '').split('\n') : [];
-    const wzor = new RegExp('(S0*' + nr + ':\\s*)(\\d+|\\?\\?)');
+    const wzorZRokiem = new RegExp('(S0*' + nr + '\\s*\\(\\d{4}\\):\\s*)(\\d+|\\?\\?)');
+    const wzorBezRoku = new RegExp('(S0*' + nr + ':\\s*)(\\d+|\\?\\?)');
     for(let i = 0; i < linie.length; i++){
-      if(wzor.test(linie[i])){
-        linie[i] = linie[i].replace(wzor, (cale, przed) => przed + pad2(ile));
+      if(wzorZRokiem.test(linie[i])){
+        linie[i] = linie[i].replace(wzorZRokiem, (cale, przed) => przed + pad2(ile));
+        return linie.join('\n');
+      }
+      if(wzorBezRoku.test(linie[i])){
+        linie[i] = rok
+          ? linie[i].replace(wzorBezRoku, () => 'S' + pad2(nr) + ' (' + rok + '): ' + pad2(ile))
+          : linie[i].replace(wzorBezRoku, (cale, przed) => przed + pad2(ile));
         return linie.join('\n');
       }
     }
-    linie.push('[✓] S' + pad2(nr) + ': ' + pad2(ile) + ' odc.');
+    const nowaLinia = '[✓] S' + pad2(nr) + (rok ? ' (' + rok + ')' : '') + ': ' + pad2(ile) + ' odc.';
+    linie.push(nowaLinia);
     return linie.join('\n');
   }
 
@@ -771,7 +788,7 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
   // numery sezonów, które da się obejrzeć: z historii sezonów i z dat odcinków
   function sezonyKarty(r){
     const numery = new Set();
-    const re = /S(\d{1,3}):/g;
+    const re = /S(\d{1,3})(?:\s*\(\d{4}\))?:/g;
     let m;
     const h = r.historia_sezonow || '';
     while((m = re.exec(h)) !== null) numery.add(Number(m[1]));
@@ -919,7 +936,9 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
       if(d && d.length && d.every((x, i) => zb.has(i + 1) && x && x <= m.dzis)) zakonczone.push(s);
     });
     zakonczone.forEach(s => {
-      historia = ustawSezonWHistorii(historia, s, m.tvm.get(s).length);
+      const dni = (m.tvm.get(s) || []).filter(Boolean).sort();
+      const rokSezonu = dni.length ? Number(dni[0].slice(0, 4)) : null;
+      historia = ustawSezonWHistorii(historia, s, m.tvm.get(s).length, rokSezonu);
       nagrane.delete(s);
     });
 
@@ -1011,6 +1030,21 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
       renderuj();
       renderujDyski();
       pokazBlad('nie udało się zmienić dysku: ' + e.message);
+    }
+  }
+
+  async function usunSerial(id){
+    const r = wszystkieRekordy.find(x => x.id === id);
+    const tytul = r ? r.tytul : '';
+    try{
+      await grist.docApi.applyUserActions([['RemoveRecord', 'Seriale', id]]);
+      wszystkieRekordy = wszystkieRekordy.filter(x => x.id !== id);
+      usunPotwierdzId = null;
+      renderuj();
+      renderujDyski();
+      pokazKomunikat('usunięto „' + tytul + '”');
+    } catch(e){
+      pokazBlad('nie udało się usunąć: ' + e.message);
     }
   }
 
@@ -1106,6 +1140,15 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
 
   // Jedna obsługa kliknięć dla całej strony.
   document.addEventListener('click', (ev) => {
+    const usunBtn = ev.target.closest('button[data-usun]');
+    if(usunBtn){
+      const id = Number(usunBtn.dataset.usun);
+      if(usunPotwierdzId === id){ usunSerial(id); }
+      else { usunPotwierdzId = id; renderuj(); }
+      return;
+    }
+    const bylPotwierdzUsun = usunPotwierdzId !== null;
+    usunPotwierdzId = null;
     if(obsluzObejrzane(ev)) return;
     const chipOb = ev.target.closest('.chip[data-obf]');
     if(chipOb){ filtrObejrzenia = (filtrObejrzenia === chipOb.dataset.obf) ? 'wszystkie' : chipOb.dataset.obf; strona = 1; renderuj(); return; }
@@ -1130,6 +1173,7 @@ padding: 12px 16px; margin-top: 8px; white-space: pre-line; line-height: 1.9; bo
     const bylOtwarty = dysk && dysk.classList.contains('open');
     document.querySelectorAll('.disk-gauge.open').forEach(g => g.classList.remove('open'));
     if(dysk && !bylOtwarty) dysk.classList.add('open');
+    if(bylPotwierdzUsun && !dysk) renderuj();
   });
 
   document.addEventListener('change', (ev) => {
