@@ -718,6 +718,7 @@
 
   // Wpisuje sezon do historii jako ukończony (zmienia liczbę w istniejącej linii albo dopisuje nową).
   function ustawSezonWHistorii(tekst, nr, ile, rok){
+    if(!ile) return tekst;   // sezon "ukończony" bez żadnego odcinka to sprzeczność - nie zapisujemy
     const linie = (tekst || '').trim() ? tekst.replace(/\s+$/, '').split('\n') : [];
     const wzorZRokiem = new RegExp('(S0*' + nr + '\\s*\\(\\d{4}\\):\\s*)(\\d+|\\?\\?)');
     const wzorBezRoku = new RegExp('(S0*' + nr + ':\\s*)(\\d+|\\?\\?)');
