@@ -265,8 +265,8 @@
   .kartofel .ikona-do{ width: 26px; height: 26px; vertical-align: middle; }
   .kartofel span{ font-size: 0.72rem; font-weight: 600; margin-left: 4px; vertical-align: middle; }
   .kartofel.on{ filter: none; opacity: 1; border: 1px solid #7FA82A; background: #9ACD32; color: #2F4A06; }
-  .chip.chip-kart{ border-color: #B8863B; color: #8A5F1C; }
-  .chip.chip-kart.active{ background: #B8863B; color: #FFFFFF; }
+  .chip.chip-kart{ border-color: #7FA82A; color: #3E5F0A; background: #F1F8DF; }
+  .chip.chip-kart.active{ background: #9ACD32; border-color: #7FA82A; color: #2F4A06; }
 
   .location-btn{
     font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
@@ -633,13 +633,13 @@
             '<select class="status-wybor" data-id="' + r.id + '" aria-label="status">' +
               ['oczekiwany', 'emitowany', 'kompletny', 'niekompletny'].map(o => '<option value="' + o + '"' + (o === r.status ? ' selected' : '') + '>' + o + '</option>').join('') +
             '</select></label>' +
-          (mamKartofel ? '<button class="kartofel' + (r.do_obejrzenia ? ' on' : '') + '" data-kartofel="' + r.id + '" aria-label="do obejrzenia">' + IKONA_DO + (r.do_obejrzenia ? '<span>do obejrzenia</span>' : '') + '</button>' : '') +
           obejrzanyTag +
           '<label class="location-btn' + (r.dysk ? '' : ' brak') + '">' +
             escapeHtml(r.dysk || 'wybierz dysk') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') +
             '<select class="dysk-wybor" data-id="' + r.id + '" aria-label="dysk">' +
               ['', 'dysk_0', 'dysk_1', 'dysk_2'].map(o => '<option value="' + o + '"' + (o === (r.dysk || '') ? ' selected' : '') + '>' + (o || '— brak —') + '</option>').join('') +
             '</select></label>' +
+          (mamKartofel ? '<button class="kartofel' + (r.do_obejrzenia ? ' on' : '') + '" data-kartofel="' + r.id + '" aria-label="do obejrzenia">' + IKONA_DO + (r.do_obejrzenia ? '<span>do obejrzenia</span>' : '') + '</button>' : '') +
           '<button class="usun-btn' + (usunPotwierdzId === r.id ? ' confirm' : '') + '" data-usun="' + r.id + '">' +
             (usunPotwierdzId === r.id ? 'na pewno?' : 'usuń') + '</button>' +
         '</div>' + dolHtml;
