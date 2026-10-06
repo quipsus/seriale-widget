@@ -254,6 +254,19 @@
   .tag.kompletny{ border-color: #4FA3DA; color: #2C7DB3; background: #E5EFF5; }
   .tag.niekompletny{ border-color: #CB704D; color: #B25A38; background: #FBEEE8; }
   .tag:hover{ filter: brightness(0.95); }
+  label.tag{ position: relative; display: block; }
+  .status-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+  .kartofel{
+    font-size: 1.15rem; line-height: 1; padding: 5px 9px; border: 1px dashed #9AAAB5; border-radius: 8px;
+    background: none; cursor: pointer; filter: grayscale(1); opacity: 0.55; width: 100%; box-sizing: border-box;
+    font-family: inherit; color: #526A7A;
+  }
+  .ikona-do{ width: 1.5em; height: 1.5em; vertical-align: middle; }
+  .kartofel .ikona-do{ width: 26px; height: 26px; vertical-align: middle; }
+  .kartofel span{ font-size: 0.72rem; font-weight: 600; margin-left: 4px; vertical-align: middle; }
+  .kartofel.on{ filter: none; opacity: 1; border: 1px solid #B8863B; background: #FBF1DC; color: #8A5F1C; }
+  .chip.chip-kart{ border-color: #B8863B; color: #8A5F1C; }
+  .chip.chip-kart.active{ background: #B8863B; color: #FFFFFF; }
 
   .location-btn{
     font-weight: 600; font-size: 0.72rem; border: 1px solid #154565; border-radius: 8px;
@@ -313,6 +326,7 @@
   // Widok "archiwum" = skończone / zarchiwizowane.
   const STATUSY_W_WIDOKU = ['kompletny', 'niekompletny'];
   // Klik w tag przełącza kompletny <-> niekompletny.
+  const IKONA_DO = '<img class="ikona-do" alt="" src="data:image/png;base64,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">';
   const KOLEJNOSC_STATUSOW = ['kompletny', 'niekompletny'];
   const POKAZ_ODCINKI = false;
   const STATUS_NOWEGO = 'kompletny';
@@ -328,6 +342,8 @@
   let dyskiDane = [];
   let strona = 1;
   let filtrStatusu = 'wszystkie';
+  let mamKartofel = false;
+  let filtrKartofla = false;
   let filtrObejrzenia = 'wszystkie';   // 'wszystkie' | 'do' (nieobejrzane) | 'ob' (obejrzane)
   let usunPotwierdzId = null;          // id serialu czekającego na drugi klik "usuń"
   let mamObejrzane = false;             // czy tabela Seriale ma już kolumnę obejrzane
@@ -514,6 +530,10 @@
         '<button class="chip chip-ob' + (filtrObejrzenia === 'do' ? ' active' : '') + '" data-obf="do">nieobejrzane (' + ob.doObejrzenia + ')</button>' +
         '<button class="chip chip-ob' + (filtrObejrzenia === 'ob' ? ' active' : '') + '" data-obf="ob">obejrzane (' + ob.obejrzane + ')</button>';
     }
+    if(mamKartofel && ob){
+      html += (mamObejrzane ? '' : '<span class="chips-sep"></span>') +
+        '<button class="chip chip-kart' + (filtrKartofla ? ' active' : '') + '" data-kart="1">' + IKONA_DO + ' do obejrzenia (' + ob.kartofle + ')</button>';
+    }
     document.getElementById('chips').innerHTML = html;
   }
 
@@ -542,11 +562,12 @@
     const policzone = {};
     wWidoku.forEach(r => { policzone[r.status] = (policzone[r.status] || 0) + 1; });
     const nieobejrzane = mamObejrzane ? wWidoku.filter(r => !czyObejrzany(r)).length : 0;
-    renderujChipy(policzone, { doObejrzenia: nieobejrzane, obejrzane: wWidoku.length - nieobejrzane });
+    renderujChipy(policzone, { doObejrzenia: nieobejrzane, obejrzane: wWidoku.length - nieobejrzane, kartofle: wWidoku.filter(r => r.do_obejrzenia).length });
 
     const pasujace = wWidoku
       .filter(r => filtrStatusu === 'wszystkie' || r.status === filtrStatusu)
       .filter(r => !mamObejrzane || filtrObejrzenia === 'wszystkie' || (filtrObejrzenia === 'ob' ? czyObejrzany(r) : !czyObejrzany(r)))
+      .filter(r => !filtrKartofla || r.do_obejrzenia)
       .sort((a, b) => (a.tytul || '').localeCompare(b.tytul || '', 'pl'));
 
     const liczbaStron = Math.max(1, Math.ceil(pasujace.length / NA_STRONE));
@@ -608,7 +629,11 @@
         '</div>' +
         '<div class="card-side">' +
           nastepnyHtml +
-          '<button class="tag ' + escapeHtml(r.status || '') + '" data-id="' + r.id + '">' + escapeHtml(r.status || '—') + '</button>' +
+          '<label class="tag ' + escapeHtml(r.status || '') + '">' + escapeHtml(r.status || '—') + ' ▾' +
+            '<select class="status-wybor" data-id="' + r.id + '" aria-label="status">' +
+              ['oczekiwany', 'emitowany', 'kompletny', 'niekompletny'].map(o => '<option value="' + o + '"' + (o === r.status ? ' selected' : '') + '>' + o + '</option>').join('') +
+            '</select></label>' +
+          (mamKartofel ? '<button class="kartofel' + (r.do_obejrzenia ? ' on' : '') + '" data-kartofel="' + r.id + '" aria-label="do obejrzenia">' + IKONA_DO + (r.do_obejrzenia ? '<span>do obejrzenia</span>' : '') + '</button>' : '') +
           obejrzanyTag +
           '<label class="location-btn' + (r.dysk ? '' : ' brak') + '">' +
             escapeHtml(r.dysk || 'wybierz dysk') + (r.rozmiar_gb ? ' · ' + Number(r.rozmiar_gb).toFixed(1) + ' GB' : '') +
@@ -1056,24 +1081,35 @@
     return String(d.getUTCDate()).padStart(2, '0') + '.' + String(d.getUTCMonth() + 1).padStart(2, '0') + '.' + d.getUTCFullYear();
   }
 
-  async function onKlikStatus(btn){
-    const id = Number(btn.dataset.id);
+  async function zmienStatus(sel){
+    const id = Number(sel.dataset.id);
     const rekord = wszystkieRekordy.find(r => r.id === id);
     if(!rekord) return;
-
-    const obecnyIndeks = KOLEJNOSC_STATUSOW.indexOf(rekord.status);
-    const nowyStatus = KOLEJNOSC_STATUSOW[(obecnyIndeks + 1) % KOLEJNOSC_STATUSOW.length];
-
-    btn.disabled = true;
+    const stary = rekord.status, nowy = sel.value;
+    if(nowy === stary) return;
+    sel.disabled = true;
     try{
-      await grist.docApi.applyUserActions([
-        ['UpdateRecord', 'Seriale', id, { status: nowyStatus }]
-      ]);
-      rekord.status = nowyStatus;
-      renderuj();
+      await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, { status: nowy }]]);
+      rekord.status = nowy;
     } catch(e){
       pokazBlad('nie udało się zapisać zmiany statusu: ' + e.message);
-      btn.disabled = false;
+      rekord.status = stary;
+    }
+    renderuj();
+  }
+
+  async function przelaczKartofla(id){
+    const r = wszystkieRekordy.find(x => x.id === id);
+    if(!r) return;
+    const nowy = !r.do_obejrzenia;
+    r.do_obejrzenia = nowy;
+    renderuj();
+    try{
+      await grist.docApi.applyUserActions([['UpdateRecord', 'Seriale', id, { do_obejrzenia: nowy }]]);
+    } catch(e){
+      r.do_obejrzenia = !nowy;
+      pokazBlad('nie udało się zapisać znacznika: ' + e.message);
+      renderuj();
     }
   }
 
@@ -1108,6 +1144,7 @@
       const tabela = await grist.docApi.fetchTable('Seriale');
       const liczbaWierszy = tabela.id.length;
       mamObejrzane = Boolean(tabela.obejrzane);
+      mamKartofel = Boolean(tabela.do_obejrzenia);
       wszystkieRekordy = [];
       for(let i = 0; i < liczbaWierszy; i++){
         wszystkieRekordy.push({
@@ -1130,6 +1167,7 @@
           kolejny_data: tabela.kolejny_data ? tabela.kolejny_data[i] : null,
           zalegle: tabela.zalegle ? tabela.zalegle[i] : 0,
           historia_sezonow: tabela.historia_sezonow ? tabela.historia_sezonow[i] : '',
+          do_obejrzenia: tabela.do_obejrzenia ? Boolean(tabela.do_obejrzenia[i]) : false,
         });
       }
       await wczytajDyski();
@@ -1155,8 +1193,10 @@
     const chipOb = ev.target.closest('.chip[data-obf]');
     if(chipOb){ filtrObejrzenia = (filtrObejrzenia === chipOb.dataset.obf) ? 'wszystkie' : chipOb.dataset.obf; strona = 1; renderuj(); return; }
     if(POKAZ_ODCINKI && obsluzOdcinki(ev)) return;
-    const tag = ev.target.closest('.tag[data-id]');
-    if(tag){ onKlikStatus(tag); return; }
+    const kart = ev.target.closest('button[data-kartofel]');
+    if(kart){ przelaczKartofla(Number(kart.dataset.kartofel)); return; }
+    const chipKart = ev.target.closest('.chip[data-kart]');
+    if(chipKart){ filtrKartofla = !filtrKartofla; strona = 1; renderuj(); return; }
 
     const chip = ev.target.closest('.chip[data-status]');
     if(chip){ filtrStatusu = chip.dataset.status; strona = 1; renderuj(); return; }
@@ -1181,6 +1221,8 @@
   document.addEventListener('change', (ev) => {
     const sel = ev.target.closest('.dysk-wybor');
     if(sel) zmienDysk(sel);
+    const st = ev.target.closest('.status-wybor');
+    if(st) zmienStatus(st);
   });
 
   document.getElementById('szukaj').addEventListener('input', () => {
