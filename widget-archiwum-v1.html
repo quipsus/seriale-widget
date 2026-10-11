@@ -607,7 +607,7 @@
         ? '<details><summary>historia sezonów</summary><div class="history-block">' + escapeHtml(r.historia_sezonow) + '</div></details>'
         : '';
 
-      const model = POKAZ_ODCINKI ? modelOdcinkow(r) : null;
+      const model = (POKAZ_ODCINKI || r.status === 'niekompletny') ? modelOdcinkow(r) : null;
       let nastepnyHtml = '', dolHtml = '';
       const obejrzaneHtml = mamObejrzane ? wierszObejrzanych(r) : '';
       if(model){
@@ -968,7 +968,7 @@
     m.tvm.forEach((v, k) => { liczby[k] = v.length; });
     const nagraneTxt = zapiszNagrane(nagrane, liczby);
     const nowy = modelOdcinkow({ odcinki_tvm: r.odcinki_tvm, odcinki_nagrane: nagraneTxt, historia_sezonow: historia });
-    const nowyStatus = statusZModelu(nowy, r.status_tvm);
+    const nowyStatus = (r.status === 'niekompletny' && nowy.kolejny) ? 'niekompletny' : statusZModelu(nowy, r.status_tvm);
 
     const pola = {
       odcinki_nagrane: nagraneTxt,
@@ -1192,7 +1192,7 @@
     if(obsluzObejrzane(ev)) return;
     const chipOb = ev.target.closest('.chip[data-obf]');
     if(chipOb){ filtrObejrzenia = (filtrObejrzenia === chipOb.dataset.obf) ? 'wszystkie' : chipOb.dataset.obf; strona = 1; renderuj(); return; }
-    if(POKAZ_ODCINKI && obsluzOdcinki(ev)) return;
+    if(obsluzOdcinki(ev)) return;
     const kart = ev.target.closest('button[data-kartofel]');
     if(kart){ przelaczKartofla(Number(kart.dataset.kartofel)); return; }
     const chipKart = ev.target.closest('.chip[data-kart]');
