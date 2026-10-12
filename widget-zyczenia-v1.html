@@ -880,7 +880,7 @@
                   (potwierdza ? 'na pewno?' : 'przenieś do seriali') + '</button>'
               : '') +
             '<button class="usun-btn' + (usunZyczenPotwierdzId === r.id ? ' confirm' : '') + '" data-usun-zyczen="' + r.id + '">' +
-              (usunZyczenPotwierdzId === r.id ? 'na pewno?' : 'usuń') + '</button>' +
+              (usunZyczenPotwierdzId === r.id ? 'na pewno?' : 'odrzuć') + '</button>' +
           '</div>' +
         '</div>' + dol;
       lista.appendChild(el);
@@ -905,14 +905,28 @@
   async function usunZyczenie(id){
     const r = zyczenia.find(x => x.id === id);
     const tytul = r ? r.tytul : '';
+    const tvId = r && Number(r.tvmaze_id) > 0 ? Number(r.tvmaze_id) : 0;
     try{
-      await grist.docApi.applyUserActions([['RemoveRecord', 'ListaZyczen', id]]);
+      const akcje = [['RemoveRecord', 'ListaZyczen', id]];
+      if(tvId){
+        const wpis = { link: 'https://www.tvmaze.com/shows/' + tvId };
+        try{
+          await grist.docApi.applyUserActions([['AddRecord', 'Odrzucone', null, wpis]]);
+        } catch(e){      // tabeli Odrzucone jeszcze nie ma - zakładamy ją
+          await grist.docApi.applyUserActions([
+            ['AddTable', 'Odrzucone', [{ id: 'link', type: 'Text' }]],
+            ['AddRecord', 'Odrzucone', null, wpis],
+          ]);
+        }
+        odrzuconeTvIds.add(tvId);
+      }
+      await grist.docApi.applyUserActions(akcje);
       zyczenia = zyczenia.filter(x => x.id !== id);
       usunZyczenPotwierdzId = null;
       renderuj();
-      pokazKomunikat('usunięto „' + tytul + '” z listy życzeń');
+      pokazKomunikat('odrzucono „' + tytul + '”');
     } catch(e){
-      pokazBlad('nie udało się usunąć: ' + e.message);
+      pokazBlad('nie udało się odrzucić: ' + e.message);
     }
   }
 
