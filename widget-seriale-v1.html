@@ -227,7 +227,11 @@
   .usun-btn:hover{ color: #CB704D; text-decoration: underline; }
   .usun-btn.confirm{ color: #CB704D; font-weight: 700; }
   .dysk-wybor{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
-  .obejrzane-row{ display:flex; align-items:center; gap: 6px; flex-wrap: wrap; margin: 10px 0 2px; }
+  .obejrzane-row{ display:flex; align-items:flex-start; gap: 10px; margin: 10px 0 2px; }
+  .obejrzane-row .obej-etykieta{ padding-top: 6px; white-space: nowrap; margin-right: 0; }
+  .obej-chipy{ display:grid; grid-template-columns: repeat(auto-fill, 52px); gap: 6px; flex: 1; min-width: 0; }
+  .obej-chipy .season-chip{ min-width: 0; width: 52px; box-sizing: border-box; }
+  .obej-chipy .mini-btn{ grid-column: span 2; }
   .obej-etykieta{ font-size: 0.74rem; font-weight: 700; color: #154565; margin-right: 4px; }
   .season-chip.obejrzany{ background: #154565; border-color: #154565; color: #F4F7F8; }
   .obejrzane-row .season-chip{ min-width: 48px; padding: 5px 8px; }
@@ -843,7 +847,7 @@
         chipy += '<button class="mini-btn" data-ob="WSZYSTKIE" data-id="' + r.id + '">wszystkie</button>';
       }
     }
-    return '<div class="obejrzane-row"><span class="obej-etykieta">obejrzane</span>' + chipy + '</div>';
+    return '<div class="obejrzane-row"><span class="obej-etykieta">obejrzane</span><div class="obej-chipy">' + chipy + '</div></div>';
   }
   async function zmienObejrzane(id, ktore){
     const r = wszystkieRekordy.find(x => x.id === id);
