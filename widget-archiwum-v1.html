@@ -833,7 +833,9 @@
     } else {
       chipy = sezony.map(n => '<button class="season-chip' + ((ob.has('ALL') || ob.has(n)) ? ' obejrzany' : '') +
         '" data-ob="' + n + '" data-id="' + r.id + '">S' + pad2(n) + '</button>').join('');
-      chipy += '<button class="mini-btn" data-ob="WSZYSTKIE" data-id="' + r.id + '">wszystkie</button>';
+      if(!ob.has('ALL') && !sezony.every(n => ob.has(n))){
+        chipy += '<button class="mini-btn" data-ob="WSZYSTKIE" data-id="' + r.id + '">wszystkie</button>';
+      }
     }
     return '<div class="obejrzane-row"><span class="obej-etykieta">obejrzane</span>' + chipy + '</div>';
   }
