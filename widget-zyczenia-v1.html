@@ -189,6 +189,9 @@
   .ep-pixel.brak-daty{ background: #E8EEF2; }
 
   .toolbar-prawa{ display:flex; align-items:center; gap: 12px; }
+  .zakres-lat{ font-size: 0.8rem; color: #526A7A; display:flex; align-items:center; gap: 6px; }
+  .zakres-lat input{ width: 58px; font: inherit; color: inherit; background: transparent; border: none; border-bottom: 1px solid #BFCFD9; padding: 2px 0; text-align: center; }
+  .zakres-lat input:focus{ outline: none; border-bottom-color: #4FA3DA; }
   .plus-btn{
     font-family: inherit; font-weight: 700; font-size: 1.4rem; line-height: 1;
     border: 2px solid #154565; background: #F4F7F8; color: #154565;
@@ -400,6 +403,7 @@
     <div class="toolbar">
       <input type="text" id="szukaj-tv" placeholder="szukaj w TVmaze…">
       <div class="toolbar-prawa">
+        <span class="zakres-lat">lata <input type="number" id="rok-od" value="1980" min="1900" max="2100" aria-label="od roku"> – <input type="number" id="rok-do" placeholder="dziś" min="1900" max="2100" aria-label="do roku"></span>
         <label class="filtr-check"><input type="checkbox" id="tylko-fabularne" checked> tylko fabularne (EN)</label>
         <button class="dodaj-zapisz" id="nastepna-partia">pobierz kolejną partię (20)</button>
       </div>
@@ -1138,10 +1142,16 @@
   }
   // Kraje stacji, które przeglądamy (brak kraju = platforma globalna, np. Netflix - zostawiamy)
   const KRAJE_OK = ['US', 'UK', 'CA', 'AU', 'IE', 'NZ', 'ZA'];
-  const ROK_OD = 1980;
+  function tvZakresLat(){
+    const od = parseInt(document.getElementById('rok-od').value, 10);
+    const do_ = parseInt(document.getElementById('rok-do').value, 10);
+    return [isNaN(od) ? 0 : od, isNaN(do_) ? 9999 : do_];
+  }
   function tvPasuje(s){
     if(!s || !s.premiered) return false;
-    if(tvRok(s) < ROK_OD) return false;
+    const [od, do_] = tvZakresLat();
+    const rok = tvRok(s);
+    if(rok < od || rok > do_) return false;
     if(s.type === 'Animation' || tvDlaDzieci(s)) return false;
     if((s.genres || []).includes('Children')) return false;
     const kraj = tvKraj(s);
@@ -1382,6 +1392,7 @@
     if(fraza) szukajTv(fraza); else zaladujPartie();
   });
   document.getElementById('tylko-fabularne').addEventListener('change', () => { if(tvTryb === 'partie') zaladujPartie(); });
+  ['rok-od', 'rok-do'].forEach(id => document.getElementById(id).addEventListener('change', () => { if(tvTryb === 'partie') zaladujPartie(); }));
   document.addEventListener('keydown', ev => {
     if(ev.key === 'Enter' && ev.target && ev.target.id === 'edycja-tytul-tv' && tvEdycjaId !== null){
       ev.preventDefault();
