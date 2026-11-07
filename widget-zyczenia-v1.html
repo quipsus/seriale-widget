@@ -1136,9 +1136,16 @@
     const nazwy = [(s.network && s.network.name) || '', (s.webChannel && s.webChannel.name) || ''].map(n => n.toLowerCase());
     return SIECI_DZIECIECE.some(sd => nazwy.some(n => n.includes(sd)));
   }
+  // Kraje stacji, które przeglądamy (brak kraju = platforma globalna, np. Netflix - zostawiamy)
+  const KRAJE_OK = ['US', 'UK', 'CA', 'AU', 'IE', 'NZ', 'ZA'];
+  const ROK_OD = 1980;
   function tvPasuje(s){
     if(!s || !s.premiered) return false;
+    if(tvRok(s) < ROK_OD) return false;
     if(s.type === 'Animation' || tvDlaDzieci(s)) return false;
+    if((s.genres || []).includes('Children')) return false;
+    const kraj = tvKraj(s);
+    if(kraj && !KRAJE_OK.includes(kraj)) return false;
     if(tvFiltrFabularne()) return s.language === 'English' && s.type === 'Scripted';
     return true;
   }
