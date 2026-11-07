@@ -371,15 +371,13 @@
     return (tytul || '?').trim().charAt(0).toUpperCase();
   }
 
-  // ---- Plakaty: ładowane wprost z serwerów TMDb (ścieżka zapisana w kolumnie plakat_tmdb).
+  // ---- Plakaty: adres w kolumnie plakat_url (TVmaze, GitHub Pages lub TMDb), ładowany wprost z serwera.
   // Nie zużywa to limitu wywołań API Grista.
   function plakatHtml(r){
     const litera = escapeHtml(inicjalTytulu(r.tytul));
-    const adresTv = (r.plakat_url || '').trim();
-    const sciezka = (r.plakat_tmdb || '').trim();
+    const adresUrl = (r.plakat_url || '').trim();
     let adres = '';
-    if(/^https:\/\/static\.tvmaze\.com\/uploads\/images\/[A-Za-z0-9_\-\/.]+$/.test(adresTv)) adres = adresTv;
-    else if(/^\/[A-Za-z0-9_\-.]+$/.test(sciezka)) adres = 'https://image.tmdb.org/t/p/w185' + sciezka;
+    if(/^https:\/\/(static\.tvmaze\.com\/uploads\/images|quipsus\.github\.io\/seriale-widget|image\.tmdb\.org\/t\/p)\/[A-Za-z0-9_\-\/.]+$/.test(adresUrl)) adres = adresUrl;
     if(adres){
       return '<div class="poster"><span>' + litera + '</span><img src="' + adres +
              '" alt="" loading="lazy" onerror="this.remove()"></div>';
@@ -795,11 +793,12 @@
   }
 
   // Status wynikający z kolejnego odcinka (te same zasady co w skrypcie sprawdz_odcinki.py)
-  function statusZModelu(m, statusTvm){
+  function statusZModelu(m, statusTvm, poprzedni){
     if(m.kolejny){
       if(m.kolejny.e === 1) return (m.kolejny.data && m.kolejny.data <= m.dzis) ? 'emitowany' : 'oczekiwany';
       return 'emitowany';
     }
+    if(!statusTvm && poprzedni === 'niekompletny') return 'kompletny';
     return statusTvm === 'Ended' ? 'kompletny' : 'oczekiwany';
   }
 
@@ -978,7 +977,7 @@
     m.tvm.forEach((v, k) => { liczby[k] = v.length; });
     const nagraneTxt = zapiszNagrane(nagrane, liczby);
     const nowy = modelOdcinkow({ odcinki_tvm: r.odcinki_tvm, odcinki_nagrane: nagraneTxt, historia_sezonow: historia });
-    const nowyStatus = (r.status === 'niekompletny' && nowy.kolejny) ? 'niekompletny' : statusZModelu(nowy, r.status_tvm);
+    const nowyStatus = (r.status === 'niekompletny' && nowy.kolejny) ? 'niekompletny' : statusZModelu(nowy, r.status_tvm, r.status);
 
     const pola = {
       odcinki_nagrane: nagraneTxt,
@@ -1166,7 +1165,6 @@
           dysk: tabela.dysk ? tabela.dysk[i] : '',
           rozmiar_gb: tabela.rozmiar_gb ? tabela.rozmiar_gb[i] : 0,
           opis: tabela.opis ? tabela.opis[i] : '',
-          plakat_tmdb: tabela.plakat_tmdb ? tabela.plakat_tmdb[i] : '',
           plakat_url: tabela.plakat_url ? tabela.plakat_url[i] : '',
           link_epguides: tabela.link_epguides ? tabela.link_epguides[i] : '',
           odcinki_tvm: tabela.odcinki_tvm ? tabela.odcinki_tvm[i] : '',
